@@ -26,6 +26,7 @@ jobs:
         uses: withastro/action@v6
         with:
           package-manager: npm
+          build-cmd: npm run build:pages
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

@@ -1,11 +1,20 @@
 ---
 import { getPortfolioData } from '../lib/github';
 import { getFeaturedGists } from '../lib/gists';
+import { existsSync } from 'node:fs';
+import { resolve } from 'node:path';
+import type { Project } from '../lib/github';
 
 const [{ profile, projects }, gists] = await Promise.all([getPortfolioData(), getFeaturedGists()]);
 const intro = profile.bio || 'I build interactive experiments, practical tools, and curious corners of the web.';
 const title = profile.name + ' — Projects and experiments';
 const description = 'Selected GitHub projects and useful gists by ' + profile.name + ', with live demos where available.';
+const screenshotFor = (project: Project): string | null => {
+  if (!project.pagesUrl) return null;
+  const safeName = project.name.replace(/[^a-zA-Z0-9_.-]/g, '_');
+  const screenshotPath = resolve('public/screenshots', safeName + '.png');
+  return existsSync(screenshotPath) ? '/screenshots/' + safeName + '.png' : null;
+};
 ---
 <!doctype html>
 <html lang="en">
@@ -65,9 +74,16 @@ const description = 'Selected GitHub projects and useful gists by ' + profile.na
                     <span class="card-no">{String(index + 1).padStart(2, '0')} / REPO</span>
                     <span class="corner-arrow" aria-hidden="true">↗</span>
                   </div>
-                  <div class="card-main">
-                    <h3>{project.name}</h3>
-                    <p>{project.description || 'A project hosted on GitHub.'}</p>
+                  <div class="project-content">
+                    <div class="card-main">
+                      <h3>{project.name}</h3>
+                      <p>{project.description || 'A project hosted on GitHub.'}</p>
+                    </div>
+                    {screenshotFor(project) && (
+                      <a class="project-preview" href={project.pagesUrl!} target="_blank" rel="noopener noreferrer" aria-label={'Open live mobile preview of ' + project.name}>
+                        <img src={screenshotFor(project)!} alt={'Mobile screenshot of ' + project.name} width="390" height="844" loading="lazy" decoding="async" />
+                      </a>
+                    )}
                   </div>
                   <div class="card-bottom">
                     <div class="meta">
@@ -183,6 +199,11 @@ const description = 'Selected GitHub projects and useful gists by ' + profile.na
   .corner-arrow { color: #a3ddc3; font-size: 22px; }
   h3 { font-size: 28px; letter-spacing: -.045em; font-weight: 660; margin: 16px 0 11px; overflow-wrap: anywhere; }
   .card-main p { color: #a6b4c6; font-size: 14px; line-height: 1.6; max-width: 420px; margin: 0; }
+  .project-content { display: flex; align-items: flex-start; justify-content: space-between; gap: 22px; min-width: 0; margin-top: 12px; }
+  .project-content .card-main { flex: 1; min-width: 0; }
+  .project-preview { display: block; width: 140px; flex: 0 0 140px; aspect-ratio: 390 / 844; background: #0c1220; padding: 4px; overflow: hidden; border-radius: 16px; border: 1px solid #435569; box-shadow: 0 8px 24px rgba(0,0,0,.25); }
+  .project-preview:hover { border-color: #a3ddc3; }
+  .project-preview img { display: block; width: 100%; height: 100%; border-radius: 11px; object-fit: cover; object-position: top center; }
   .card-bottom { border-top: 1px solid #344154; padding-top: 19px; margin-top: 29px; flex-wrap: wrap; align-items: center; }
   .meta { display: flex; align-items: center; gap: 15px; color: #8e9cb0; font-size: 12px; }
   .language { display: flex; align-items: center; gap: 6px; }
@@ -206,6 +227,8 @@ const description = 'Selected GitHub projects and useful gists by ' + profile.na
     .work { padding: 65px 0 80px; }
   }
   @media (max-width: 480px) {
+    .project-content { flex-direction: column; }
+    .project-preview { flex: 0 0 auto; width: 160px; align-self: center; }
     .project { padding: 22px; }
     h1 { font-size: 49px; }
     footer { flex-direction: column; }
