@@ -1,10 +1,11 @@
 ---
 import { getPortfolioData } from '../lib/github';
+import { getFeaturedGists } from '../lib/gists';
 
-const { profile, projects } = await getPortfolioData();
+const [{ profile, projects }, gists] = await Promise.all([getPortfolioData(), getFeaturedGists()]);
 const intro = profile.bio || 'I build interactive experiments, practical tools, and curious corners of the web.';
 const title = profile.name + ' — Projects and experiments';
-const description = 'Selected GitHub projects by ' + profile.name + ', with live demos where available.';
+const description = 'Selected GitHub projects and useful gists by ' + profile.name + ', with live demos where available.';
 ---
 <!doctype html>
 <html lang="en">
@@ -85,6 +86,44 @@ const description = 'Selected GitHub projects by ' + profile.name + ', with live
             <p class="empty">There are no pinned repositories to display yet. Pin repositories on GitHub and they will appear after the next build.</p>
           )}
         </section>
+
+        <section class="work gists-section" id="gists" aria-labelledby="gists-title">
+          <div class="section-header">
+            <div>
+              <p class="eyebrow">Notes &amp; snippets / 02</p>
+              <h2 id="gists-title">Selected gists<span class="dot">.</span></h2>
+            </div>
+            <a class="all-gists-link" href="https://gist.github.com/hallojoe" target="_blank" rel="noopener noreferrer">View all gists ↗</a>
+          </div>
+
+          {gists.length > 0 ? (
+            <div class="grid">
+              {gists.map((gist, index) => (
+                <article class="project gist-card">
+                  <div class="card-top">
+                    <span class="card-no">{String(index + 1).padStart(2, '0')} / GIST</span>
+                    <span class="corner-arrow" aria-hidden="true">↗</span>
+                  </div>
+                  <div class="card-main">
+                    <h3>{gist.title}</h3>
+                    <p>{gist.description || 'A technical note or useful code snippet.'}</p>
+                  </div>
+                  <div class="card-bottom">
+                    <div class="meta">
+                      {gist.language && <span class="language">{gist.language}</span>}
+                      <span>{gist.fileCount} {gist.fileCount === 1 ? 'file' : 'files'}</span>
+                    </div>
+                    <div class="project-links">
+                      <a class="live" href={gist.url} target="_blank" rel="noopener noreferrer" aria-label={'Read ' + gist.title + ' on GitHub Gist'}>Read gist ↗</a>
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
+          ) : (
+            <p class="empty">Selected gists are currently unavailable. Browse them directly on <a href="https://gist.github.com/hallojoe">GitHub Gists</a>.</p>
+          )}
+        </section>
       </main>
 
       <footer>
@@ -128,6 +167,10 @@ const description = 'Selected GitHub projects by ' + profile.name + ', with live
   .portrait p { color: #d5dfeb; font-size: 13px; margin-top: 38px; }
   .portrait p span { color: #8294ab; }
   .work { border-top: 1px solid #2b3546; padding: 80px 0 110px; }
+  .gists-section { padding-top: 75px; }
+  .gist-card { min-height: 250px; }
+  .all-gists-link { font-size: 14px; color: #a3ddc3; text-decoration: none; margin-bottom: 8px; }
+  .all-gists-link:hover { text-decoration: underline; }
   .section-header { display: flex; justify-content: space-between; align-items: end; gap: 30px; margin-bottom: 38px; }
   .section-header h2 { font-size: clamp(37px, 4vw, 52px); line-height: 1.1; letter-spacing: -.055em; margin: 14px 0 0; }
   .section-caption { font-size: 14px; line-height: 1.6; color: #8e9db2; max-width: 240px; text-align: right; }
