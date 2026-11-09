@@ -21,7 +21,7 @@ let successCount = 0;
 
 try {
   const context = await browser.newContext({
-    viewport: { width: 390, height: 844 },
+    viewport: { width: 1024, height: 768 },
     deviceScaleFactor: 1,
     isMobile: true,
     hasTouch: true,
@@ -61,7 +61,7 @@ try {
         timeout: 15_000,
       });
       successCount++;
-      console.log('Saved mobile screenshot: ' + file);
+      console.log('Saved landscape tablet screenshot: ' + file);
     } catch (error) {
       // One down demo must not break the portfolio deployment.
       console.warn('Skipping screenshot for ' + project.name + ':', error);
@@ -75,4 +75,4 @@ try {
   await browser.close();
 }
 
-console.log('Captured ' + successCount + '/' + eligible.length + ' mobile screenshots (390 × 844).');
+console.log('Captured ' + successCount + '/' + eligible.length + ' landscape tablet screenshots (1024 × 768).');

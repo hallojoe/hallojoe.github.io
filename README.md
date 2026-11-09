@@ -23,9 +23,9 @@ The Astro build calls GitHub's public Gists REST API for each selected ID. It di
 
 The existing daily GitHub Actions build refreshes the gist cards automatically; no additional token or runtime server is required.
 
-## Automatic mobile screenshots
+## Automatic landscape tablet screenshots
 
-The GitHub Pages deployment workflow generates screenshots from the *current pinned repositories* that publish a GitHub Pages URL. During each push to `main`, manual deployment, and daily rebuild, it installs Playwright Chromium, visits each live project at a **390 × 844 mobile viewport**, waits for the page to render, and saves a PNG in `public/screenshots/<repository>.png`. Astro embeds those PNGs into the corresponding cards. Only successfully captured screenshots appear; repositories without Pages retain their text-only cards.
+The GitHub Pages deployment workflow generates screenshots from the *current pinned repositories* that publish a GitHub Pages URL. During each push to `main`, manual deployment, and daily rebuild, it installs Playwright Chromium, visits each live project at a **1024 × 768 landscape tablet viewport**, waits for the page to render, and saves a PNG in `public/screenshots/<repository>.png`. Astro embeds those PNGs as full-width previews directly below each project's description. The preview extends flush to both sides of the card, while the text and links remain padded. Only successfully captured screenshots appear; repositories without Pages retain their text-only cards.
 
 The screenshots are generated assets: they are included in the deployed static site, **not committed to Git**. If a demo is temporarily down or a screenshot fails, that card retains its source/live links without a screenshot and the rest of the site still deploys.
 
