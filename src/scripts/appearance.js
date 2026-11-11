@@ -3,7 +3,6 @@ const appearance = document.querySelector('#appearance');
 const themes = [...appearance.querySelectorAll('[data-theme-choice]')];
 const mode = appearance.querySelector('#color-mode');
 const controls = document.querySelector('#scene-options');
-const follow = controls.querySelector('#follow');
 const effects = controls.querySelector('#effects');
 const wireframe = controls.querySelector('#wireframe');
 const key = 'hallojoe.appearance.v1';
@@ -15,7 +14,6 @@ const settings = {
   mesh: saved?.mesh === 'wireframe' ? 'wireframe' : 'filled',
   effects: saved?.effects !== false,
 };
-let following = true;
 let engine, unavailable = false;
 
 function updateBrowserColor() {
@@ -28,15 +26,13 @@ async function render() {
   mode.value = settings.mode;
   updateBrowserColor();
   for (const button of themes) button.setAttribute('aria-pressed', String(button.dataset.themeChoice === settings.theme));
-  follow.setAttribute('aria-pressed', String(following));
-  follow.title = following ? 'Stop following pointer' : 'Start following pointer';
   effects.setAttribute('aria-pressed', String(settings.effects));
   wireframe.setAttribute('aria-pressed', String(settings.mesh === 'wireframe'));
   if (unavailable || (!engine && settings.theme === 'original')) return;
   try {
     engine ??= import('./scene.js').then(module => module.createScene());
     const configure = await engine;
-    configure(settings, following);
+    configure(settings);
   } catch (error) {
     unavailable = true;
     document.querySelector('#scene-widget').hidden = true;
@@ -56,7 +52,6 @@ mode.addEventListener('change', () => {
   settings.mode = mode.value;
   saveAndRender();
 });
-follow.addEventListener('click', () => { following = !following; render(); });
 effects.addEventListener('click', () => { settings.effects = !settings.effects; saveAndRender(); });
 wireframe.addEventListener('click', () => {
   settings.mesh = settings.mesh === 'wireframe' ? 'filled' : 'wireframe';
