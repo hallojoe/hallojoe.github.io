@@ -1,4 +1,5 @@
 ---
+import '../styles/themes.css';
 import { getPortfolioData } from '../lib/github';
 import { getFeaturedGists } from '../lib/gists';
 import { existsSync } from 'node:fs';
@@ -6,7 +7,6 @@ import { resolve } from 'node:path';
 import type { Project } from '../lib/github';
 
 const [{ profile, projects }, gists] = await Promise.all([getPortfolioData(), getFeaturedGists()]);
-const intro = profile.bio || 'I build interactive experiments, practical tools, and curious corners of the web.';
 const title = profile.name + ' — Projects and experiments';
 const description = 'Selected GitHub projects and useful gists by ' + profile.name + ', with live demos where available.';
 const screenshotFor = (project: Project): string | null => {
@@ -32,6 +32,7 @@ const screenshotFor = (project: Project): string | null => {
     <title>{title}</title>
   </head>
   <body>
+    <div class="scene-slot" id="page-scene" aria-hidden="true"></div>
     <div class="shell">
       <header class="topbar">
         <a class="wordmark" href="/" aria-label="Go to homepage">hallo<span>joe</span><b>.</b></a>
@@ -42,19 +43,22 @@ const screenshotFor = (project: Project): string | null => {
         <section class="hero" aria-labelledby="headline">
           <div class="hero-copy">
             <p class="eyebrow"><span class="line"></span> Hello, internet</p>
-            <h1 id="headline">Hi, I'm <em>{profile.name}.</em><br />I make things <span class="dot">●</span></h1>
-            <p class="intro">{intro}</p>
+            <h1 id="headline">Together <em>things</em></h1>
+            <p class="intro">Lets be curious and practical</p>
             <div class="hero-links">
               <a class="cta" href="#work">Explore my work <span aria-hidden="true">↓</span></a>
               <a class="secondary" href={profile.url} target="_blank" rel="noopener noreferrer">View on GitHub ↗</a>
             </div>
           </div>
-          <aside class="portrait">
-            <div class="portrait-frame">
-              <img src={profile.avatarUrl} alt={'GitHub profile avatar for ' + profile.name} width="192" height="192" decoding="async" />
-            </div>
-            <p>{profile.name}<span> / GitHub</span></p>
-          </aside>
+          <div class="hero-art">
+            <div class="scene-slot" id="hero-scene" aria-hidden="true"></div>
+            <aside class="portrait">
+              <div class="portrait-frame">
+                <img src={profile.avatarUrl} alt={'GitHub profile avatar for ' + profile.name} width="192" height="192" decoding="async" />
+              </div>
+              <p>{profile.name}<span> / GitHub</span></p>
+            </aside>
+          </div>
         </section>
 
         <section class="work" id="work" aria-labelledby="work-title">
@@ -63,7 +67,7 @@ const screenshotFor = (project: Project): string | null => {
               <p class="eyebrow">Selected work / 01</p>
               <h2 id="work-title">Pinned projects<span class="dot">.</span></h2>
             </div>
-            <p class="section-caption">A few things I've chosen to feature on GitHub. Refreshed automatically.</p>
+            <p class="section-caption">A few things I've chosen to feature on GitHub.</p>
           </div>
 
           {projects.length > 0 ? (
@@ -144,96 +148,122 @@ const screenshotFor = (project: Project): string | null => {
 
       <footer>
         <span>© {new Date().getFullYear()} {profile.name}</span>
-        <span>Built for the curious. <a href={profile.url} target="_blank" rel="noopener noreferrer">GitHub ↗</a></span>
+        <span>Turtles all the way down <a href={profile.url} target="_blank" rel="noopener noreferrer">GitHub ↗</a></span>
+        <div class="appearance" id="appearance" hidden>
+          <div class="appearance-controls">
+            <div class="choices" role="group" aria-label="Site theme">
+              <span class="control-label" aria-hidden="true">Theme</span>
+              {[
+                ['original', 'Original'], ['matrix', 'Terminal matrix l'],
+                ['comic', 'Comic brutalistic'], ['kittens', 'Cute japanese kittens'],
+              ].map(([value, label]) => (
+                <button type="button" data-theme-choice={value} aria-pressed={value === 'original'}>{label}</button>
+              ))}
+            </div>
+            <div class="choices" id="scene-options" role="group" aria-label="3D background settings" hidden>
+              <span class="control-label" aria-hidden="true">Scene</span>
+              <button type="button" data-mesh="filled" aria-pressed="true">Filled</button>
+              <button type="button" data-mesh="wireframe" aria-pressed="false">Wireframe</button>
+              <button type="button" id="effects" aria-label="Scene effects" aria-pressed="true">Effects on</button>
+            </div>
+          </div>
+          <div class="scene-slot" id="footer-scene" aria-hidden="true"></div>
+        </div>
       </footer>
     </div>
+  <script>
+    import '../scripts/appearance.js';
+  </script>
   </body>
 </html>
 
 <style>
   :global(*) { box-sizing: border-box; }
   :global(html) { scroll-behavior: smooth; }
-  :global(body) { margin: 0; background: #101521; color: #f2f4f8; font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; -webkit-font-smoothing: antialiased; }
+  :global(body) { margin: 0; background-color: var(--page); color: var(--ink); font-family: var(--font); -webkit-font-smoothing: antialiased; }
   :global(a) { color: inherit; }
-  :global(a:focus-visible) { outline: 3px solid #a8c6ff; outline-offset: 4px; border-radius: 4px; }
-  :global(::selection) { background: #b6d5ff; color: #101521; }
-  .shell { max-width: 1168px; margin: auto; padding: 0 40px; }
-  .topbar { min-height: 104px; display: flex; justify-content: space-between; align-items: center; gap: 16px; border-bottom: 1px solid #2b3546; }
+  :global(:is(a, button):focus-visible) { outline: 3px solid var(--focus); outline-offset: 4px; border-radius: 4px; }
+  :global(::selection) { background: var(--focus); color: var(--page); }
+  .shell { position: relative; z-index: 1; max-width: 1168px; margin: auto; padding: 0 40px; }
+  .topbar { min-height: 64px; display: flex; justify-content: space-between; align-items: center; gap: 16px; border-bottom: 1px solid var(--rule); }
   .wordmark { text-decoration: none; font-size: 25px; font-weight: 760; letter-spacing: -.07em; }
-  .wordmark span { color: #a6b6d0; }
-  .wordmark b, .dot { color: #a3ddc3; }
-  .profile-link { font-size: 13px; color: #c5d0e1; text-decoration: none; border: 1px solid #435067; padding: 11px 15px; border-radius: 100px; transition: border-color .15s; }
-  .profile-link:hover { border-color: #a6bddb; color: #fff; }
-  .hero { min-height: 580px; display: grid; grid-template-columns: minmax(0, 1fr) 250px; align-items: center; gap: 40px; padding: 100px 0 110px; }
-  .eyebrow { text-transform: uppercase; letter-spacing: .17em; font-size: 11px; font-weight: 700; color: #a3ddc3; display: flex; align-items: center; gap: 13px; }
-  .line { height: 1px; width: 28px; background: #a3ddc3; display: block; }
-  h1 { font-size: clamp(47px, 6vw, 82px); letter-spacing: -.075em; font-weight: 680; line-height: 1.08; margin: 27px 0 24px; }
-  h1 em { font-style: normal; color: #a3ddc3; }
-  h1 .dot { font-size: .23em; vertical-align: middle; }
-  .intro { max-width: 590px; font-size: 19px; line-height: 1.65; color: #aab8cb; }
-  .hero-links { display: flex; gap: 24px; align-items: center; flex-wrap: wrap; margin-top: 37px; }
-  .cta { background: #a3ddc3; color: #0f2030; font-size: 14px; font-weight: 730; padding: 14px 21px; border-radius: 6px; text-decoration: none; }
-  .cta:hover { background: #c0f3db; }
+  .wordmark span { color: var(--muted); }
+  .wordmark b, .dot { color: var(--accent); }
+  .profile-link { font-size: 13px; color: var(--soft-ink); text-decoration: none; border: 1px solid var(--strong-rule); padding: 11px 15px; border-radius: 100px; transition: border-color .15s; }
+  .profile-link:hover { border-color: var(--highlight); color: var(--ink); }
+  .hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(150px, 34%); align-items: center; gap: 40px; padding: clamp(24px, 3vw, 40px) 0; }
+  .eyebrow { text-transform: uppercase; letter-spacing: .17em; font-size: 11px; font-weight: 700; color: var(--accent); display: flex; align-items: center; gap: 13px; }
+  .line { height: 1px; width: 28px; background: var(--accent); display: block; }
+  h1 { font-size: clamp(40px, 5.8vw, 76px); letter-spacing: -.075em; font-weight: 680; line-height: 1.08; margin: 10px 0 8px; }
+  h1 em { font-style: normal; color: var(--accent); }
+  .intro { margin: 0; max-width: 590px; font-size: 18px; line-height: 1.65; color: var(--muted); }
+  .hero-links { display: flex; gap: 24px; align-items: center; flex-wrap: wrap; margin-top: 18px; }
+  .cta { background: var(--accent); color: var(--accent-ink); font-size: 14px; font-weight: 730; padding: 11px 17px; border-radius: 6px; text-decoration: none; }
+  .cta:hover { background: var(--highlight); }
   .cta span { margin-left: 18px; }
-  .secondary { color: #d6e0ee; text-decoration: none; border-bottom: 1px solid #66778e; padding-bottom: 5px; font-size: 14px; }
-  .secondary:hover { border-color: #a6bddb; color: #fff; }
+  .secondary { color: var(--soft-ink); text-decoration: none; border-bottom: 1px solid var(--strong-rule); padding-bottom: 5px; font-size: 14px; }
+  .secondary:hover { border-color: var(--highlight); color: var(--ink); }
+  .hero-art { position: relative; display: grid; place-items: center; align-self: stretch; }
   .portrait { align-self: center; justify-self: center; text-align: center; }
-  .portrait-frame { background: #1c2938; padding: 17px; border: 1px solid #465b70; border-radius: 22px; box-shadow: 20px 20px 0 -4px #1a2733; transform: rotate(4deg); }
-  .portrait-frame img { width: 190px; height: 190px; object-fit: cover; border-radius: 12px; display: block; }
-  .portrait p { color: #d5dfeb; font-size: 13px; margin-top: 38px; }
-  .portrait p span { color: #8294ab; }
-  .work { border-top: 1px solid #2b3546; padding: 80px 0 110px; }
-  .gists-section { padding-top: 75px; }
+  .portrait-frame { background: var(--card); width: fit-content; margin: auto; padding: 7px; border: 1px solid var(--strong-rule); border-radius: 22px; box-shadow: 8px 8px 0 -4px var(--shade); transform: rotate(4deg); }
+  .portrait-frame img { width: 98px; height: 98px; object-fit: cover; border-radius: 12px; display: block; }
+  .portrait p { color: var(--soft-ink); font-size: 13px; margin: 14px 0 0; }
+  .portrait p span { color: var(--muted); }
+  .work { border-top: 1px solid var(--rule); padding: 40px 0 76px; }
+  .gists-section { padding-top: 48px; }
   .gist-card { min-height: 250px; }
-  .all-gists-link { font-size: 14px; color: #a3ddc3; text-decoration: none; margin-bottom: 8px; }
+  .all-gists-link { font-size: 14px; color: var(--accent); text-decoration: none; margin-bottom: 8px; }
   .all-gists-link:hover { text-decoration: underline; }
   .section-header { display: flex; justify-content: space-between; align-items: end; gap: 30px; margin-bottom: 38px; }
   .section-header h2 { font-size: clamp(37px, 4vw, 52px); line-height: 1.1; letter-spacing: -.055em; margin: 14px 0 0; }
-  .section-caption { font-size: 14px; line-height: 1.6; color: #8e9db2; max-width: 240px; text-align: right; }
+  .section-caption { font-size: 14px; line-height: 1.6; color: var(--muted); max-width: 240px; text-align: right; }
   .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
-  .project { background: #182131; border: 1px solid #303f52; border-radius: 13px; padding: 27px; min-height: 290px; display: flex; flex-direction: column; justify-content: space-between; transition: border-color .2s, transform .2s; }
-  .project:hover { border-color: #64836f; transform: translateY(-3px); }
+  .project { background: var(--card); border: 1px solid var(--rule); border-radius: var(--radius); padding: 27px; min-height: 290px; display: flex; flex-direction: column; justify-content: space-between; transition: border-color .2s, transform .2s; }
+  .project:hover { border-color: var(--highlight); transform: translateY(-3px); }
   .card-top, .card-bottom { display: flex; justify-content: space-between; gap: 12px; }
   .card-top { align-items: center; }
-  .card-no { font-size: 11px; letter-spacing: .12em; color: #7f97b6; font-weight: 700; }
-  .corner-arrow { color: #a3ddc3; font-size: 22px; }
+  .card-no { font-size: 11px; letter-spacing: .12em; color: var(--muted); font-weight: 700; }
+  .corner-arrow { color: var(--accent); font-size: 22px; }
   h3 { font-size: 28px; letter-spacing: -.045em; font-weight: 660; margin: 16px 0 11px; overflow-wrap: anywhere; }
-  .card-main p { color: #a6b4c6; font-size: 14px; line-height: 1.6; max-width: 420px; margin: 0; }
+  .card-main p { color: var(--muted); font-size: 14px; line-height: 1.6; max-width: 420px; margin: 0; }
   .project-content { min-width: 0; margin-top: 12px; }
   /* Edge-to-edge preview inside the padded repository card. */
-  .project-preview { display: block; width: calc(100% + 54px); flex-shrink: 0; margin: 24px -27px 0; aspect-ratio: 4 / 3; background: #0c1220; overflow: hidden; }
+  .project-preview { display: block; width: calc(100% + 54px); flex-shrink: 0; margin: 24px -27px 0; aspect-ratio: 4 / 3; background: var(--page); overflow: hidden; }
   .project-preview img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top center; transition: opacity .2s; }
   .project-preview:hover img { opacity: .85; }
-  .card-bottom { border-top: 1px solid #344154; padding-top: 19px; margin-top: 29px; flex-wrap: wrap; align-items: center; }
-  .meta { display: flex; align-items: center; gap: 15px; color: #8e9cb0; font-size: 12px; }
+  .card-bottom { border-top: 1px solid var(--rule); padding-top: 19px; margin-top: 29px; flex-wrap: wrap; align-items: center; }
+  .meta { display: flex; align-items: center; gap: 15px; color: var(--muted); font-size: 12px; }
   .language { display: flex; align-items: center; gap: 6px; }
   .language i { display: inline-block; width: 9px; height: 9px; border-radius: 100%; background: #8da5c6; }
   .project-links { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; font-size: 13px; font-weight: 650; }
-  .project-links a { text-decoration: none; color: #c7d5e7; }
+  .project-links a { text-decoration: none; color: var(--soft-ink); }
   .project-links a:hover { text-decoration: underline; }
-  .project-links .live { color: #a3ddc3; }
-  .empty { background: #182131; border: 1px solid #303f52; border-radius: 13px; padding: 30px; color: #b4c2d4; }
-  footer { border-top: 1px solid #2b3546; display: flex; justify-content: space-between; gap: 20px; padding: 28px 0 40px; font-size: 12px; color: #788ba6; }
-  footer a { color: #a3ddc3; text-decoration: none; }
+  .project-links .live { color: var(--accent); }
+  .empty { background: var(--card); border: 1px solid var(--rule); border-radius: var(--radius); padding: 30px; color: var(--soft-ink); }
+  footer { flex-wrap: wrap; align-items: baseline; border-top: 1px solid var(--rule); display: flex; justify-content: space-between; gap: 20px; padding: 28px 0 40px; font-size: 12px; color: var(--muted); }
+  footer a { color: var(--accent); text-decoration: none; }
   @media (max-width: 780px) {
     .shell { padding: 0 22px; }
-    .topbar { min-height: 85px; }
-    .hero { grid-template-columns: 1fr; padding: 76px 0 95px; min-height: 0; gap: 60px; }
-    .portrait { justify-self: start; margin-left: 16px; }
-    .portrait-frame img { height: 140px; width: 140px; }
+    .topbar { min-height: 56px; }
+    .hero { grid-template-columns: minmax(0, 1fr) 26%; gap: 10px; }
+    .portrait-frame img { width: 64px; height: 64px; }
+    .portrait p { font-size: 11px; }
     .section-header { align-items: start; flex-direction: column; gap: 8px; }
     .section-caption { max-width: 400px; text-align: left; }
     .grid { grid-template-columns: 1fr; }
-    .work { padding: 65px 0 80px; }
+    .work { padding: 28px 0 60px; }
   }
   @media (max-width: 480px) {
     .project { padding: 22px; }
     .project-preview { width: calc(100% + 44px); margin-left: -22px; margin-right: -22px; }
-    h1 { font-size: 49px; }
-    footer { flex-direction: column; }
+    h1 { font-size: clamp(32px, 8vw, 40px); }
+    .hero-links { gap: 12px; }
+    .intro { font-size: 15px; }
+    footer { column-gap: 12px; row-gap: 8px; }
   }
   @media (prefers-reduced-motion: reduce) {
     :global(html) { scroll-behavior: auto; }
     .project { transition: none; }
+    .project:hover { transform: none; }
   }
 </style>
