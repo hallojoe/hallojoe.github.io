@@ -157,4 +157,31 @@ function kitten() {
   return {model, effect, tilt: [.045, -.17, -.045]};
 }
 
-export const models = { matrix: terminal, comic, kittens: kitten };
+function times() {
+  const navy = '#344487', teal = '#33978d', paper = '#fff7dd';
+  const model = sculpture(({ box, oval, add }) => {
+    // A beveled browser window, raised hyperlink and miniature globe.
+    box([0, 0, -.12], [2.45, 1.85, .28], '#a6aaa8', .035);
+    box([0, .69, .04], [2.28, .32, .08], navy);
+    for (let i = 0; i < 2; i++) box([.78 + .22 * i, .70, .11], [.15, .15, .06], paper, .01);
+    box([-.54, .70, .10], [.91, .047, .03], paper);
+    box([0, -.15, .045], [2.23, 1.20, .09], paper);
+    for (const [x, y, width] of [[.45, .13, .87], [.34, -.08, .65], [.40, -.30, .77]]) {
+      box([x, y, .11], [width, .05, .025], navy, .005);
+    }
+    box([.40, -.38, .11], [.77, .018, .025], navy, .003);
+    oval([-.58, -.12, .16], [.36, .36, .36], teal);
+    for (const turn of [0, Math.PI / 3, -Math.PI / 3]) {
+      add(new T.TorusGeometry(.365, .013, 5, 32), '#b4e1c7', [-.58, -.12, .16], undefined, [0, turn, 0]);
+    }
+    add(new T.TorusGeometry(.365, .013, 5, 32), '#b4e1c7', [-.58, -.12, .16], undefined, [Math.PI / 2, 0, 0]);
+  });
+  const effect = sculpture(({ relief }) => {
+    const cursor = [[0, 0], [.12, -.63], [.24, -.46], [.39, -.66], [.51, -.57], [.34, -.37], [.54, -.34]];
+    relief(cursor, [.60, -.19, .32], navy, .06, .032);
+    relief(cursor, [.60, -.19, .40], paper, .025, .004);
+  });
+  return { model, effect, tilt: [.09, -.30, -.05] };
+}
+
+export const models = { matrix: terminal, comic, kittens: kitten, times };
