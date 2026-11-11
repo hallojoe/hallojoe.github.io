@@ -1,3 +1,5 @@
+import { repositories, type Tagged } from '../config/portfolio';
+
 const USERNAME = 'hallojoe';
 
 interface Repository {
@@ -10,7 +12,7 @@ interface Repository {
   primaryLanguage: { name: string; color: string | null } | null;
 }
 
-export interface Project {
+export interface Project extends Tagged {
   name: string;
   description: string | null;
   repoUrl: string;
@@ -27,31 +29,28 @@ export interface PortfolioData {
 
 interface GraphResponse {
   data?: {
+    [alias: `repo${number}`]: Repository | null;
     user?: {
       name: string | null;
       bio: string | null;
       avatarUrl: string;
       url: string;
-      pinnedItems: { nodes: (Repository | null)[] };
     } | null;
   };
   errors?: { message: string }[];
 }
 
-const query = [
-  'query Portfolio($login: String!) {',
-  '  user(login: $login) {',
-  '    name bio avatarUrl(size: 192) url',
-  '    pinnedItems(first: 6, types: REPOSITORY) {',
-  '      nodes { ... on Repository {',
-  '        name description url homepageUrl stargazerCount',
-  '        owner { login }',
-  '        primaryLanguage { name color }',
-  '      } }',
-  '    }',
-  '  }',
-  '}',
-].join('\n');
+// Fetch the profile and the explicitly selected repositories in one request.
+const repositoryFields = repositories.map(({ name }, index) => `
+  repo${index}: repository(owner: $login, name: ${JSON.stringify(name)}) {
+    name description url homepageUrl stargazerCount
+    owner { login }
+    primaryLanguage { name color }
+  }`);
+const query = `query Portfolio($login: String!) {
+  user(login: $login) { name bio avatarUrl(size: 192) url }
+  ${repositoryFields.join('\n')}
+}`;
 
 async function publishedPagesUrl(repo: Repository): Promise<string | null> {
   const api = 'https://api.github.com/repos/' +
@@ -110,18 +109,20 @@ export async function getPortfolioData(): Promise<PortfolioData> {
   const user = payload.data?.user;
   if (!user) throw new Error('GitHub user not found: ' + USERNAME);
 
-  const repos = user.pinnedItems.nodes.filter(
-    (node): node is Repository => !!node && typeof node.url === 'string',
-  );
-  const projects: Project[] = await Promise.all(repos.map(async (repo) => ({
-    name: repo.name,
-    description: repo.description,
-    repoUrl: repo.url,
-    pagesUrl: await publishedPagesUrl(repo),
-    stars: repo.stargazerCount,
-    language: repo.primaryLanguage?.name ?? null,
-    languageColor: repo.primaryLanguage?.color ?? null,
-  })));
+  const projects = await Promise.all(repositories.map(async ({ name, tags }, index) => {
+    const repo = payload.data?.[`repo${index}`];
+    if (!repo) throw new Error('Could not load selected repository: ' + name);
+    return {
+      name: repo.name,
+      tags,
+      description: repo.description,
+      repoUrl: repo.url,
+      pagesUrl: await publishedPagesUrl(repo),
+      stars: repo.stargazerCount,
+      language: repo.primaryLanguage?.name ?? null,
+      languageColor: repo.primaryLanguage?.color ?? null,
+    };
+  }));
 
   return {
     profile: {
