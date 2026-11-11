@@ -10,6 +10,9 @@ export function createScene() {
   const renderer = new T.WebGLRenderer({ alpha: true, antialias: true, powerPreference: 'low-power' });
   renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
   const canvas = renderer.domElement;
+  canvas.tabIndex = 0;
+  canvas.setAttribute('role', 'img');
+  canvas.setAttribute('aria-label', '3D model. Drag or use the arrow keys to rotate.');
   widget.append(canvas);
   const scene = new T.Scene();
   const rig = new T.Group();
@@ -89,20 +92,43 @@ export function createScene() {
   visibility.observe(hero);
   visibility.observe(document.querySelector('footer'));
 
+  function takeControl() {
+    if (following) {
+      targetX = angleX;
+      targetY = angleY;
+      following = false;
+    }
+  }
+
   function aim(x, y) {
-    if (!following || !slot || reduced.matches) return;
+    if (!slot || drag || (following && reduced.matches)) return;
     const rect = slot.getBoundingClientRect();
     targetX = T.MathUtils.clamp((x - rect.left - rect.width / 2) / (innerWidth * .45), -1, 1) * .45;
     targetY = T.MathUtils.clamp((y - rect.top - rect.height / 2) / (innerHeight * .45), -1, 1) * .26;
+    if (!following) {
+      // Resume from the equivalent pose nearest the target after any number of turns.
+      const turn = Math.PI * 2;
+      angleX -= Math.round((angleX - targetX) / turn) * turn;
+      angleY -= Math.round((angleY - targetY) / turn) * turn;
+      previous = performance.now();
+      following = true;
+    }
     queue();
   }
-  window.addEventListener('pointermove', e => aim(e.clientX, e.clientY), { passive: true });
+  function followOutside(event) {
+    if (following || event.target !== canvas) aim(event.clientX, event.clientY);
+  }
+  window.addEventListener('pointermove', followOutside, { passive: true });
+  window.addEventListener('pointerdown', followOutside, { passive: true });
+  window.addEventListener('wheel', followOutside, { passive: true });
   document.addEventListener('focusin', e => {
+    if (e.target === canvas) return;
     const rect = e.target.getBoundingClientRect();
     aim(rect.left + rect.width / 2, rect.top + rect.height / 2);
   });
   canvas.addEventListener('pointerdown', e => {
-    if (following || drag || e.button !== 0) return;
+    if (drag || !e.isPrimary || e.button !== 0) return;
+    takeControl();
     canvas.setPointerCapture(e.pointerId);
     drag = { id: e.pointerId, x: e.clientX, y: e.clientY };
   });
@@ -115,17 +141,17 @@ export function createScene() {
     drag.y = e.clientY;
     queue();
   });
-  canvas.addEventListener('lostpointercapture', () => { drag = null; });
+  canvas.addEventListener('lostpointercapture', e => {
+    if (drag?.id === e.pointerId) drag = null;
+  });
   canvas.addEventListener('keydown', e => {
-    if (following) return;
     const step = Math.PI / 12;
-    switch (e.key) {
-      case 'ArrowLeft': targetX -= step; break;
-      case 'ArrowRight': targetX += step; break;
-      case 'ArrowUp': targetY -= step; break;
-      case 'ArrowDown': targetY += step; break;
-      default: return;
-    }
+    const turns = { ArrowLeft: [-step, 0], ArrowRight: [step, 0], ArrowUp: [0, -step], ArrowDown: [0, step] };
+    const turn = turns[e.key];
+    if (!turn) return;
+    takeControl();
+    targetX += turn[0];
+    targetY += turn[1];
     e.preventDefault();
     queue();
   });
@@ -143,7 +169,7 @@ export function createScene() {
     queue();
   });
 
-  return function configure(settings, followPointer) {
+  return function configure(settings) {
     if (settings.theme !== theme) {
       if (active) {
         for (const mesh of [active.model, active.effect]) {
@@ -155,6 +181,7 @@ export function createScene() {
       theme = settings.theme;
       active = models[theme]?.() ?? null;
       if (active) rig.add(active.model, active.effect);
+      following = true;
       angleX = angleY = targetX = targetY = elapsed = 0;
       widget.hidden = !active;
       document.documentElement.toggleAttribute('data-scene-ready', !!active);
@@ -162,23 +189,6 @@ export function createScene() {
       resize();
     }
     if (!active) return;
-    if (following !== followPointer) {
-      following = followPointer;
-      drag = null;
-      targetX = following ? 0 : angleX;
-      targetY = following ? 0 : angleY;
-    }
-    if (following) {
-      canvas.removeAttribute('tabindex');
-      canvas.removeAttribute('role');
-      canvas.removeAttribute('aria-label');
-      canvas.setAttribute('aria-hidden', 'true');
-    } else {
-      canvas.tabIndex = 0;
-      canvas.removeAttribute('aria-hidden');
-      canvas.setAttribute('role', 'img');
-      canvas.setAttribute('aria-label', '3D model. Use arrow keys to rotate.');
-    }
     effects = settings.effects;
     active.effect.visible = effects;
     for (const mesh of [active.model, active.effect]) mesh.material.wireframe = settings.mesh === 'wireframe';
