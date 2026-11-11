@@ -1,5 +1,6 @@
 ---
 import '../styles/themes.css';
+import { groupByTag, links } from '../config/portfolio';
 import { getPortfolioData } from '../lib/github';
 import { getFeaturedGists } from '../lib/gists';
 import { existsSync } from 'node:fs';
@@ -8,7 +9,7 @@ import type { Project } from '../lib/github';
 
 const [{ profile, projects }, gists] = await Promise.all([getPortfolioData(), getFeaturedGists()]);
 const title = profile.name + ' — Projects and experiments';
-const description = 'Selected GitHub projects and useful gists by ' + profile.name + ', with live demos where available.';
+const description = 'Selected GitHub projects, gists and links from ' + profile.name + ', with live demos where available.';
 const screenshotFor = (project: Project): string | null => {
   if (!project.pagesUrl) return null;
   const safeName = project.name.replace(/[^a-zA-Z0-9_.-]/g, '_');
@@ -63,86 +64,108 @@ const screenshotFor = (project: Project): string | null => {
 
         <section class="work" id="work" aria-labelledby="work-title">
           <div class="section-header">
-            <div>
-              <p class="eyebrow">Selected work / 01</p>
-              <h2 id="work-title">Pinned projects<span class="dot">.</span></h2>
-            </div>
+            <h2 id="work-title">Projects<span class="dot">.</span></h2>
             <p class="section-caption">A few things I've chosen to feature on GitHub.</p>
           </div>
 
           {projects.length > 0 ? (
-            <div class="grid">
-              {projects.map((project, index) => (
-                <article class="project">
-                  <div class="card-top">
-                    <span class="card-no">{String(index + 1).padStart(2, '0')} / REPO</span>
-                    <span class="corner-arrow" aria-hidden="true">↗</span>
-                  </div>
-                  <div class="project-content">
-                    <div class="card-main">
-                      <h3>{project.name}</h3>
-                      <p>{project.description || 'A project hosted on GitHub.'}</p>
-                    </div>
-                  </div>
-                  {screenshotFor(project) && (
-                    <a class="project-preview" href={project.pagesUrl!} target="_blank" rel="noopener noreferrer" aria-label={'Open live landscape tablet preview of ' + project.name}>
-                      <img src={screenshotFor(project)!} alt={'Landscape iPad-style screenshot of ' + project.name} width="1024" height="768" loading="lazy" decoding="async" />
-                    </a>
-                  )}
-                  <div class="card-bottom">
-                    <div class="meta">
-                      {project.language && <span class="language"><i style={project.languageColor ? 'background-color:' + project.languageColor : ''}></i>{project.language}</span>}
-                      <span aria-label={project.stars + ' GitHub stars'}>☆ {project.stars}</span>
-                    </div>
-                    <div class="project-links">
-                      <a href={project.repoUrl} target="_blank" rel="noopener noreferrer" aria-label={'Source code for ' + project.name}>Source code ↗</a>
-                      {project.pagesUrl && <a class="live" href={project.pagesUrl} target="_blank" rel="noopener noreferrer" aria-label={'Live site for ' + project.name}>Live site ↗</a>}
-                    </div>
-                  </div>
-                </article>
-              ))}
-            </div>
+            groupByTag(projects).map(({ tag, items }) => (
+              <section class="tag-group">
+                <h3 class="eyebrow">{tag}</h3>
+                <div class="grid">
+                  {items.map((project, index) => (
+                    <article class="project">
+                      <div class="card-top">
+                        <span class="card-no">{String(index + 1).padStart(2, '0')} / REPO</span>
+                        <span class="corner-arrow" aria-hidden="true">↗</span>
+                      </div>
+                      <div class="project-content">
+                        <div class="card-main">
+                          <h4>{project.name}</h4>
+                          <p>{project.description || 'A project hosted on GitHub.'}</p>
+                        </div>
+                      </div>
+                      {screenshotFor(project) && (
+                        <a class="project-preview" href={project.pagesUrl!} target="_blank" rel="noopener noreferrer" aria-label={'Open live landscape tablet preview of ' + project.name}>
+                          <img src={screenshotFor(project)!} alt={'Landscape iPad-style screenshot of ' + project.name} width="1024" height="768" loading="lazy" decoding="async" />
+                        </a>
+                      )}
+                      <div class="card-bottom">
+                        <div class="meta">
+                          {project.language && <span class="language"><i style={project.languageColor ? 'background-color:' + project.languageColor : ''}></i>{project.language}</span>}
+                          <span aria-label={project.stars + ' GitHub stars'}>☆ {project.stars}</span>
+                        </div>
+                        <div class="project-links">
+                          <a href={project.repoUrl} target="_blank" rel="noopener noreferrer" aria-label={'Source code for ' + project.name}>Source code ↗</a>
+                          {project.pagesUrl && <a class="live" href={project.pagesUrl} target="_blank" rel="noopener noreferrer" aria-label={'Live site for ' + project.name}>Live site ↗</a>}
+                        </div>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              </section>
+            ))
           ) : (
-            <p class="empty">There are no pinned repositories to display yet. Pin repositories on GitHub and they will appear after the next build.</p>
+            <p class="empty">No projects have been selected yet.</p>
           )}
         </section>
 
         <section class="work gists-section" id="gists" aria-labelledby="gists-title">
           <div class="section-header">
-            <div>
-              <p class="eyebrow">Notes &amp; snippets / 02</p>
-              <h2 id="gists-title">Selected gists<span class="dot">.</span></h2>
-            </div>
+            <h2 id="gists-title">Selected gists<span class="dot">.</span></h2>
             <a class="all-gists-link" href="https://gist.github.com/hallojoe" target="_blank" rel="noopener noreferrer">View all gists ↗</a>
           </div>
 
           {gists.length > 0 ? (
-            <div class="grid">
-              {gists.map((gist, index) => (
-                <article class="project gist-card">
-                  <div class="card-top">
-                    <span class="card-no">{String(index + 1).padStart(2, '0')} / GIST</span>
-                    <span class="corner-arrow" aria-hidden="true">↗</span>
-                  </div>
-                  <div class="card-main">
-                    <h3>{gist.title}</h3>
-                    <p>{gist.description || 'A technical note or useful code snippet.'}</p>
-                  </div>
-                  <div class="card-bottom">
-                    <div class="meta">
-                      {gist.language && <span class="language">{gist.language}</span>}
-                      <span>{gist.fileCount} {gist.fileCount === 1 ? 'file' : 'files'}</span>
-                    </div>
-                    <div class="project-links">
-                      <a class="live" href={gist.url} target="_blank" rel="noopener noreferrer" aria-label={'Read ' + gist.title + ' on GitHub Gist'}>Read gist ↗</a>
-                    </div>
-                  </div>
-                </article>
-              ))}
-            </div>
+            groupByTag(gists).map(({ tag, items }) => (
+              <section class="tag-group">
+                <h3 class="eyebrow">{tag}</h3>
+                <div class="grid">
+                  {items.map((gist, index) => (
+                    <article class="project gist-card">
+                      <div class="card-top">
+                        <span class="card-no">{String(index + 1).padStart(2, '0')} / GIST</span>
+                        <span class="corner-arrow" aria-hidden="true">↗</span>
+                      </div>
+                      <div class="card-main">
+                        <h4>{gist.title}</h4>
+                        <p>{gist.description || 'A technical note or useful code snippet.'}</p>
+                      </div>
+                      <div class="card-bottom">
+                        <div class="meta">
+                          {gist.language && <span class="language">{gist.language}</span>}
+                          <span>{gist.fileCount} {gist.fileCount === 1 ? 'file' : 'files'}</span>
+                        </div>
+                        <div class="project-links">
+                          <a class="live" href={gist.url} target="_blank" rel="noopener noreferrer" aria-label={'Read ' + gist.title + ' on GitHub Gist'}>Read gist ↗</a>
+                        </div>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              </section>
+            ))
           ) : (
             <p class="empty">Selected gists are currently unavailable. Browse them directly on <a href="https://gist.github.com/hallojoe">GitHub Gists</a>.</p>
           )}
+        </section>
+
+        <section class="work" id="links" aria-labelledby="links-title">
+          <div class="section-header">
+            <h2 id="links-title">Links<span class="dot">.</span></h2>
+          </div>
+          {groupByTag(links).map(({ tag, items }) => (
+            <section class="tag-group">
+              <h3 class="eyebrow">{tag}</h3>
+              <ul class="reading-list">
+                {items.map(link => (
+                  <li><a href={link.url} target="_blank" rel="noopener noreferrer">
+                    {link.title}<span aria-hidden="true">↗</span>
+                  </a></li>
+                ))}
+              </ul>
+            </section>
+          ))}
         </section>
       </main>
 
@@ -217,6 +240,13 @@ const screenshotFor = (project: Project): string | null => {
   .section-header { display: flex; justify-content: space-between; align-items: end; gap: 30px; margin-bottom: 38px; }
   .section-header h2 { font-size: clamp(37px, 4vw, 52px); line-height: 1.1; letter-spacing: -.055em; margin: 14px 0 0; }
   .section-caption { font-size: 14px; line-height: 1.6; color: var(--muted); max-width: 240px; text-align: right; }
+  .tag-group + .tag-group { margin-top: 36px; }
+  .tag-group > .eyebrow { margin: 0 0 14px; }
+  .reading-list { list-style: none; margin: 0; padding: 0; }
+  .reading-list li { border-top: 1px solid var(--rule); }
+  .reading-list a { display: flex; justify-content: space-between; gap: 16px; padding: 16px 0; text-decoration: none; }
+  .reading-list a:hover { text-decoration: underline; }
+  .reading-list a span { color: var(--accent); }
   .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
   .project { background: var(--card); border: 1px solid var(--rule); border-radius: var(--radius); padding: 27px; min-height: 290px; display: flex; flex-direction: column; justify-content: space-between; transition: border-color .2s, transform .2s; }
   .project:hover { border-color: var(--highlight); transform: translateY(-3px); }
@@ -224,7 +254,7 @@ const screenshotFor = (project: Project): string | null => {
   .card-top { align-items: center; }
   .card-no { font-size: 11px; letter-spacing: .12em; color: var(--muted); font-weight: 700; }
   .corner-arrow { color: var(--accent); font-size: 22px; }
-  h3 { font-size: 28px; letter-spacing: -.045em; font-weight: 660; margin: 16px 0 11px; overflow-wrap: anywhere; }
+  .card-main h4 { font-size: 28px; letter-spacing: -.045em; font-weight: 660; margin: 16px 0 11px; overflow-wrap: anywhere; }
   .card-main p { color: var(--muted); font-size: 14px; line-height: 1.6; max-width: 420px; margin: 0; }
   .project-content { min-width: 0; margin-top: 12px; }
   /* Edge-to-edge preview inside the padded repository card. */

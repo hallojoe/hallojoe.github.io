@@ -1,4 +1,4 @@
-import { selectedGists } from '../config/gists';
+import { selectedGists, type Tagged } from '../config/portfolio';
 
 interface GithubGist {
   id: string;
@@ -10,7 +10,7 @@ interface GithubGist {
   updated_at: string;
 }
 
-export interface FeaturedGist {
+export interface FeaturedGist extends Tagged {
   title: string;
   description: string | null;
   url: string;
@@ -19,7 +19,7 @@ export interface FeaturedGist {
   updatedAt: string;
 }
 
-async function getGist(id: string, title: string): Promise<FeaturedGist | null> {
+async function getGist({ id, title, tags }: typeof selectedGists[number]): Promise<FeaturedGist | null> {
   try {
     const response = await fetch('https://api.github.com/gists/' + encodeURIComponent(id), {
       headers: {
@@ -35,6 +35,7 @@ async function getGist(id: string, title: string): Promise<FeaturedGist | null> 
     const files = Object.values(gist.files ?? {});
     return {
       title,
+      tags,
       description: gist.description || null,
       url: 'https://gist.github.com/hallojoe/' + id,
       language: files.find((file) => file.language)?.language ?? null,
@@ -49,6 +50,6 @@ async function getGist(id: string, title: string): Promise<FeaturedGist | null> 
 }
 
 export async function getFeaturedGists(): Promise<FeaturedGist[]> {
-  const results = await Promise.all(selectedGists.map(({ id, title }) => getGist(id, title)));
+  const results = await Promise.all(selectedGists.map(getGist));
   return results.filter((gist): gist is FeaturedGist => gist !== null);
 }

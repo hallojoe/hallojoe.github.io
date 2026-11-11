@@ -6,7 +6,7 @@ import { getPortfolioData } from '../src/lib/github';
 const screenshotDir = resolve('public/screenshots');
 const { projects } = await getPortfolioData();
 const eligible = projects.filter((project) => project.pagesUrl);
-console.log('Found ' + eligible.length + ' pinned repositories with GitHub Pages.');
+console.log('Found ' + eligible.length + ' selected repositories with GitHub Pages.');
 
 await rm(screenshotDir, { recursive: true, force: true });
 await mkdir(screenshotDir, { recursive: true });
