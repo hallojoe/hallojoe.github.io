@@ -1,47 +1,67 @@
 const root = document.documentElement;
 const appearance = document.querySelector('#appearance');
 const themes = [...appearance.querySelectorAll('[data-theme-choice]')];
-const meshes = [...appearance.querySelectorAll('[data-mesh]')];
-const effects = appearance.querySelector('#effects');
-const options = appearance.querySelector('#scene-options');
+const mode = appearance.querySelector('#color-mode');
+const controls = document.querySelector('#scene-options');
+const follow = controls.querySelector('#follow');
+const effects = controls.querySelector('#effects');
+const wireframe = controls.querySelector('#wireframe');
 const key = 'hallojoe.appearance.v1';
 let saved;
 try { saved = JSON.parse(localStorage.getItem(key)); } catch { /* Storage is optional. */ }
 const settings = {
   theme: themes.some(b => b.dataset.themeChoice === saved?.theme) ? saved.theme : 'original',
+  mode: ['light', 'dark'].includes(saved?.mode) ? saved.mode : 'system',
   mesh: saved?.mesh === 'wireframe' ? 'wireframe' : 'filled',
   effects: saved?.effects !== false,
 };
+let following = true;
+let engine, unavailable = false;
 
-let engine, configure, unavailable = false;
+function updateBrowserColor() {
+  const color = getComputedStyle(document.body).backgroundColor;
+  for (const meta of document.querySelectorAll('meta[name="theme-color"]')) meta.content = color;
+}
 async function render() {
   root.dataset.theme = settings.theme;
-  document.querySelector('meta[name="theme-color"]').content = getComputedStyle(root).getPropertyValue('--page').trim();
+  root.dataset.mode = settings.mode;
+  mode.value = settings.mode;
+  updateBrowserColor();
   for (const button of themes) button.setAttribute('aria-pressed', String(button.dataset.themeChoice === settings.theme));
-  for (const button of meshes) button.setAttribute('aria-pressed', String(button.dataset.mesh === settings.mesh));
-  effects.textContent = settings.effects ? 'Effects on' : 'Effects off';
+  follow.setAttribute('aria-pressed', String(following));
+  follow.title = following ? 'Stop following pointer' : 'Start following pointer';
   effects.setAttribute('aria-pressed', String(settings.effects));
-  options.hidden = settings.theme === 'original' || unavailable;
-  if (!configure && (options.hidden || unavailable)) return;
+  wireframe.setAttribute('aria-pressed', String(settings.mesh === 'wireframe'));
+  if (unavailable || (!engine && settings.theme === 'original')) return;
   try {
     engine ??= import('./scene.js').then(module => module.createScene());
-    configure = await engine;
-    configure(settings);
+    const configure = await engine;
+    configure(settings, following);
   } catch (error) {
     unavailable = true;
-    options.hidden = true;
+    document.querySelector('#scene-widget').hidden = true;
     delete root.dataset.sceneReady;
     console.warn('The 3D background could not start.', error);
   }
 }
-appearance.addEventListener('click', event => {
-  const button = event.target.closest('button');
-  if (!button) return;
-  if (button.dataset.themeChoice) settings.theme = button.dataset.themeChoice;
-  else if (button.dataset.mesh) settings.mesh = button.dataset.mesh;
-  else if (button === effects) settings.effects = !settings.effects;
+function saveAndRender() {
   try { localStorage.setItem(key, JSON.stringify(settings)); } catch { /* Apply for this visit. */ }
   render();
+}
+for (const button of themes) button.addEventListener('click', () => {
+  settings.theme = button.dataset.themeChoice;
+  saveAndRender();
 });
+mode.addEventListener('change', () => {
+  settings.mode = mode.value;
+  saveAndRender();
+});
+follow.addEventListener('click', () => { following = !following; render(); });
+effects.addEventListener('click', () => { settings.effects = !settings.effects; saveAndRender(); });
+wireframe.addEventListener('click', () => {
+  settings.mesh = settings.mesh === 'wireframe' ? 'filled' : 'wireframe';
+  saveAndRender();
+});
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', updateBrowserColor);
 appearance.hidden = false;
 render();
