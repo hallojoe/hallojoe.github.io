@@ -10,7 +10,8 @@
     "build:pages": "playwright install --with-deps chromium && npm run screenshots && npm run build"
   },
   "dependencies": {
-    "astro": "^6.0.0"
+    "astro": "^6.0.0",
+    "three": "0.186.1"
   },
   "devDependencies": {
     "playwright": "^1.56.0",
