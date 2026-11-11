@@ -2,7 +2,7 @@
 
 A personal one-page portfolio built with Astro and hosted on GitHub Pages.
 
-The homepage displays GitHub profile details, curated repositories, gists, and reading links grouped by tag. Projects with GitHub Pages also have a separate live-site link.
+The homepage displays GitHub profile details, curated repositories, gists, and reading links grouped by tag. Repository cards link to the live site when available and otherwise link to the source. Star counts appear from six stars upwards.
 
 Deployment is handled by `.github/workflows/deploy.yml` on commits to `main`, manual runs and a daily schedule. The build reads the configured repositories using the GitHub GraphQL API and verifies Pages URLs with the GitHub REST API.
 
@@ -26,8 +26,8 @@ The existing daily GitHub Actions build refreshes the gist cards automatically; 
 
 ## Automatic landscape tablet screenshots
 
-The GitHub Pages deployment workflow generates screenshots from the configured repositories that publish a GitHub Pages URL. During each push to `main`, manual deployment, and daily rebuild, it installs Playwright Chromium, visits each live project at a **1024 × 768 landscape tablet viewport**, waits for the page to render, and saves a PNG in `public/screenshots/<repository>.png`. Astro embeds those PNGs as full-width previews directly below each project's description. The preview extends flush to both sides of the card, while the text and links remain padded. Only successfully captured screenshots appear; repositories without Pages retain their text-only cards.
+The GitHub Pages deployment workflow generates screenshots from the configured repositories that publish a GitHub Pages URL. During each push to `main`, manual deployment, and daily rebuild, it installs Playwright Chromium, visits each live project at a **1024 × 768 landscape tablet viewport**, waits for the page to render, and saves a PNG in `public/screenshots/<repository>.png`. Astro uses each successful capture as its card’s background. A theme-colored gradient protects the text, and hover or keyboard focus reveals more of the image.
 
-The screenshots are generated assets: they are included in the deployed static site, **not committed to Git**. If a demo is temporarily down or a screenshot fails, that card retains its source/live links without a screenshot and the rest of the site still deploys.
+Screenshots are generated during deployment. If a capture fails, the card still shows its live-site link on a plain background.
 
 For local testing, run `npm install`, `npx playwright install chromium` and then `npm run screenshots` with `GITHUB_TOKEN` set; `npm run build` will include the screenshots. The workflow uses `npm run build:pages` to install Chromium and perform both steps.
