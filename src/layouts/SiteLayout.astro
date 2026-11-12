@@ -116,7 +116,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
   .wordmark b { color: var(--accent); }
   .hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(150px, 34%); align-items: center; gap: 40px; padding: clamp(24px, 3vw, 40px) 0; }
   h1 { font-size: clamp(40px, 5.8vw, 76px); letter-spacing: -.075em; font-weight: 680; line-height: 1.08; margin: 10px 0 8px; }
-  .hero-art { position: relative; display: grid; place-items: center; align-self: stretch; }
+  .hero-art { min-height: 240px; position: relative; display: grid; place-items: center; align-self: stretch; }
   .portrait { align-self: center; justify-self: center; text-align: center; }
   .portrait-frame { background: var(--card); width: fit-content; margin: auto; padding: 7px; border: 1px solid var(--strong-rule); border-radius: 22px; box-shadow: 8px 8px 0 -4px var(--shade); transform: rotate(4deg); }
   .portrait-frame img { width: 98px; height: 98px; object-fit: cover; border-radius: 12px; display: block; }
