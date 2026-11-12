@@ -144,10 +144,13 @@ const links = newestFirst(readingPage.links);
   .card-main h4 { font-size: 28px; letter-spacing: -.045em; font-weight: 660; margin: 16px 0 11px; overflow-wrap: anywhere; }
   .card-main p { color: var(--muted); font-size: 14px; line-height: 1.6; max-width: 420px; margin: 0; }
   .project-content { min-width: 0; margin-top: 12px; }
-  .has-screenshot { position: relative; isolation: isolate; overflow: hidden; }
+  .has-screenshot {
+    position: relative; isolation: isolate; overflow: hidden;
+    --screenshot-wash: light-dark(rgb(255 255 255 / 48%), transparent);
+  }
   .has-screenshot::before {
     content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
-    background: var(--project-image) center / cover no-repeat;
+    background: linear-gradient(var(--screenshot-wash), var(--screenshot-wash)), var(--project-image) center / cover no-repeat;
     opacity: .54; filter: saturate(.7);
     transition: opacity .25s ease, transform .35s ease;
   }
@@ -162,6 +165,7 @@ const links = newestFirst(readingPage.links);
   .has-screenshot .corner-arrow { color: var(--ink); }
   .has-screenshot .live::after { content: ''; position: absolute; inset: 0; }
   .has-screenshot:focus-within { outline: 2px solid var(--focus); outline-offset: 2px; }
+  .has-screenshot:is(:hover, :focus-within) { --screenshot-wash: light-dark(rgb(255 255 255 / 34%), transparent); }
   .has-screenshot:is(:hover, :focus-within)::before { opacity: .7; transform: scale(1.025); }
   .card-bottom { border-top: 1px solid var(--rule); padding-top: 19px; margin-top: 29px; flex-wrap: wrap; align-items: center; }
   .meta { display: flex; align-items: center; gap: 15px; color: var(--muted); font-size: 12px; }
