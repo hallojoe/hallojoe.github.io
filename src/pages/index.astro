@@ -43,15 +43,27 @@ const projectCards = projects.map(project => ({ ...project, screenshot: screensh
         <a class="wordmark" href="/" aria-label="Go to homepage">hallo<span>joe</span><b>.</b></a>
         <div class="header-actions">
           <div id="appearance" hidden>
-            <div class="swatches" role="group" aria-label="Site theme">
-              {[
-                ['original', 'Original', '#8299b8'], ['matrix', 'Terminal matrix l', '#63b95c'],
-                ['comic', 'Comic brutalistic', '#ecc43b'], ['kittens', 'Cute japanese kittens', '#e69bb4'],
-                ['times', 'Times', '#4055ba'],
-              ].map(([value, name, color]) => (
-                <button type="button" data-theme-choice={value} style={{ '--swatch': color }}
-                  title={name} aria-label={name} aria-pressed={value === 'original'}></button>
-              ))}
+            <div class="theme-picker">
+              <button type="button" class="theme-toggle" aria-label="Choose theme" title="Choose theme"
+                aria-expanded="false" aria-controls="theme-choices"></button>
+              <div id="theme-choices" class="swatches" inert role="group" aria-label="Site theme">
+                {[
+                  ['original', 'Original', '#8299b8'], ['matrix', 'Terminal matrix l', '#63b95c'],
+                  ['comic', 'Comic brutalistic', '#ecc43b'], ['kittens', 'Cute japanese kittens', '#e69bb4'],
+                  ['times', 'Times', '#4055ba'],
+                ].map(([value, name, color]) => (
+                  <button type="button" data-theme-choice={value} style={{ '--swatch': color }}
+                    title={name} aria-label={name} aria-pressed={value === 'original'}></button>
+                ))}
+              </div>
+            </div>
+            <div id="scene-options" role="group" aria-label="3D scene controls">
+              <button type="button" id="effects" aria-label="Scene effects" title="Scene effects" aria-pressed="true">
+                <svg viewBox="0 0 20 20" aria-hidden="true"><path fill="currentColor" d="m8 2 1.7 5.3L15 9l-5.3 1.7L8 16l-1.7-5.3L1 9l5.3-1.7zm7 9 .9 2.6 2.6.9-2.6.9L15 18l-.9-2.6-2.6-.9 2.6-.9z"/></svg>
+              </button>
+              <button type="button" id="wireframe" aria-label="Wireframe" title="Wireframe" aria-pressed="false">
+                <svg viewBox="0 0 20 20" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" d="m10 2 7 4v8l-7 4-7-4V6zm0 8 7-4M3 6l7 4v8"/></svg>
+              </button>
             </div>
             <label class="mode-control">
               <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1.6"/><path fill="currentColor" d="M12 4a8 8 0 0 1 0 16z"/></svg>
@@ -68,33 +80,15 @@ const projectCards = projects.map(project => ({ ...project, screenshot: screensh
 
       <main>
         <section class="hero" aria-labelledby="headline">
-          <div class="hero-copy">
-            <p class="eyebrow"><span class="line"></span> Hello, internet</p>
-            <h1 id="headline"><AnimatedText config={headline} /></h1>
-            <p class="intro">Lets be curious and practical</p>
-            <div class="hero-links">
-              <a class="cta" href="#work">Explore my work <span aria-hidden="true">↓</span></a>
-              <a class="secondary" href={profile.url} target="_blank" rel="noopener noreferrer">View on GitHub ↗</a>
-            </div>
-          </div>
+          <h1 id="headline"><AnimatedText config={headline} /></h1>
           <div class="hero-art">
             <div class="scene-slot" id="hero-scene">
-              <div id="scene-widget" hidden>
-                <div id="scene-options" role="group" aria-label="3D scene controls">
-                  <button type="button" id="effects" aria-label="Scene effects" title="Scene effects" aria-pressed="true">
-                    <svg viewBox="0 0 20 20" aria-hidden="true"><path fill="currentColor" d="m8 2 1.7 5.3L15 9l-5.3 1.7L8 16l-1.7-5.3L1 9l5.3-1.7zm7 9 .9 2.6 2.6.9-2.6.9L15 18l-.9-2.6-2.6-.9 2.6-.9z"/></svg>
-                  </button>
-                  <button type="button" id="wireframe" aria-label="Wireframe" title="Wireframe" aria-pressed="false">
-                    <svg viewBox="0 0 20 20" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" d="m10 2 7 4v8l-7 4-7-4V6zm0 8 7-4M3 6l7 4v8"/></svg>
-                  </button>
-                </div>
-              </div>
+              <div id="scene-widget" hidden></div>
             </div>
             <aside class="portrait">
               <div class="portrait-frame">
                 <img src={profile.avatarUrl} alt={'GitHub profile avatar for ' + profile.name} width="192" height="192" decoding="async" />
               </div>
-              <p>{profile.name}<span> / GitHub</span></p>
             </aside>
           </div>
         </section>
@@ -102,7 +96,7 @@ const projectCards = projects.map(project => ({ ...project, screenshot: screensh
         <section class="work" id="work" aria-labelledby="work-title">
           <div class="section-header">
             <h2 id="work-title">Projects<span class="dot">.</span></h2>
-            <p class="section-caption">A few things I've chosen to feature on GitHub.</p>
+            <p class="section-caption">Featured GitHub projects.</p>
           </div>
 
           {projects.length > 0 ? (
@@ -233,21 +227,11 @@ const projectCards = projects.map(project => ({ ...project, screenshot: screensh
   .wordmark b, .dot { color: var(--accent); }
   .hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(150px, 34%); align-items: center; gap: 40px; padding: clamp(24px, 3vw, 40px) 0; }
   .eyebrow { text-transform: uppercase; letter-spacing: .17em; font-size: 11px; font-weight: 700; color: var(--accent); display: flex; align-items: center; gap: 13px; }
-  .line { height: 1px; width: 28px; background: var(--accent); display: block; }
   h1 { font-size: clamp(40px, 5.8vw, 76px); letter-spacing: -.075em; font-weight: 680; line-height: 1.08; margin: 10px 0 8px; }
-  .intro { margin: 0; max-width: 590px; font-size: 18px; line-height: 1.65; color: var(--muted); }
-  .hero-links { display: flex; gap: 24px; align-items: center; flex-wrap: wrap; margin-top: 18px; }
-  .cta { background: var(--accent); color: var(--accent-ink); font-size: 14px; font-weight: 730; padding: 11px 17px; border-radius: 6px; text-decoration: none; }
-  .cta:hover { background: var(--highlight); }
-  .cta span { margin-left: 18px; }
-  .secondary { color: var(--soft-ink); text-decoration: none; border-bottom: 1px solid var(--strong-rule); padding-bottom: 5px; font-size: 14px; }
-  .secondary:hover { border-color: var(--highlight); color: var(--ink); }
   .hero-art { position: relative; display: grid; place-items: center; align-self: stretch; }
   .portrait { align-self: center; justify-self: center; text-align: center; }
   .portrait-frame { background: var(--card); width: fit-content; margin: auto; padding: 7px; border: 1px solid var(--strong-rule); border-radius: 22px; box-shadow: 8px 8px 0 -4px var(--shade); transform: rotate(4deg); }
   .portrait-frame img { width: 98px; height: 98px; object-fit: cover; border-radius: 12px; display: block; }
-  .portrait p { color: var(--soft-ink); font-size: 13px; margin: 14px 0 0; }
-  .portrait p span { color: var(--muted); }
   .work { border-top: 1px solid var(--rule); padding: 40px 0 76px; }
   .gists-section { padding-top: 48px; }
   .gist-card { min-height: 250px; }
@@ -308,7 +292,6 @@ const projectCards = projects.map(project => ({ ...project, screenshot: screensh
     .topbar { min-height: 56px; }
     .hero { grid-template-columns: minmax(0, 1fr) 26%; gap: 10px; }
     .portrait-frame img { width: 64px; height: 64px; }
-    .portrait p { font-size: 11px; }
     .section-header { align-items: start; flex-direction: column; gap: 8px; }
     .section-caption { max-width: 400px; text-align: left; }
     .grid { grid-template-columns: 1fr; }
@@ -319,10 +302,9 @@ const projectCards = projects.map(project => ({ ...project, screenshot: screensh
     .wordmark { font-size: 20px; }
   }
   @media (max-width: 480px) {
+    .topbar { flex-wrap: wrap; }
     .project { padding: 22px; }
     h1 { font-size: clamp(32px, 8vw, 40px); }
-    .hero-links { gap: 12px; }
-    .intro { font-size: 15px; }
     footer { column-gap: 12px; row-gap: 8px; }
   }
   @media (prefers-reduced-motion: reduce) {

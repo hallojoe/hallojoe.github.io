@@ -3,7 +3,7 @@ import type { AnimatedTextConfig } from '../lib/animated-text';
 export const headline = {
   pretext: ['Things'],
   posttext: ['Dotnet', 'Umbraco', 'Aspire', 'Visual'],
-  right: { effect: 'type', holdMs: 2400 },
+  right: { effect: 'type', holdMs: 4800 },
 } satisfies AnimatedTextConfig;
 
 // Tag order controls the order of groups in every section.
