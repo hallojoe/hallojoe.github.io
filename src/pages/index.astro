@@ -1,6 +1,7 @@
 ---
 import '../styles/themes.css';
-import { groupByTag, links } from '../config/portfolio';
+import AnimatedText from '../components/AnimatedText.astro';
+import { groupByTag, headline, links } from '../config/portfolio';
 import { getPortfolioData } from '../lib/github';
 import { getFeaturedGists } from '../lib/gists';
 import { existsSync } from 'node:fs';
@@ -69,7 +70,7 @@ const projectCards = projects.map(project => ({ ...project, screenshot: screensh
         <section class="hero" aria-labelledby="headline">
           <div class="hero-copy">
             <p class="eyebrow"><span class="line"></span> Hello, internet</p>
-            <h1 id="headline">Together <em>things</em></h1>
+            <h1 id="headline"><AnimatedText config={headline} /></h1>
             <p class="intro">Lets be curious and practical</p>
             <div class="hero-links">
               <a class="cta" href="#work">Explore my work <span aria-hidden="true">↓</span></a>
@@ -226,7 +227,7 @@ const projectCards = projects.map(project => ({ ...project, screenshot: screensh
   :global(:is(a, button):focus-visible) { outline: 3px solid var(--focus); outline-offset: 4px; border-radius: 4px; }
   :global(::selection) { background: var(--focus); color: var(--page); }
   .shell { position: relative; z-index: 1; max-width: 1168px; margin: auto; padding: 0 40px; }
-  .topbar { min-height: 64px; display: flex; justify-content: space-between; align-items: center; gap: 16px; border-bottom: 1px solid var(--rule); }
+  .topbar { min-height: 64px; display: flex; justify-content: space-between; align-items: center; gap: 16px; }
   .wordmark { text-decoration: none; font-size: 25px; font-weight: 760; letter-spacing: -.07em; }
   .wordmark span { color: var(--muted); }
   .wordmark b, .dot { color: var(--accent); }
@@ -234,7 +235,6 @@ const projectCards = projects.map(project => ({ ...project, screenshot: screensh
   .eyebrow { text-transform: uppercase; letter-spacing: .17em; font-size: 11px; font-weight: 700; color: var(--accent); display: flex; align-items: center; gap: 13px; }
   .line { height: 1px; width: 28px; background: var(--accent); display: block; }
   h1 { font-size: clamp(40px, 5.8vw, 76px); letter-spacing: -.075em; font-weight: 680; line-height: 1.08; margin: 10px 0 8px; }
-  h1 em { font-style: normal; color: var(--accent); }
   .intro { margin: 0; max-width: 590px; font-size: 18px; line-height: 1.65; color: var(--muted); }
   .hero-links { display: flex; gap: 24px; align-items: center; flex-wrap: wrap; margin-top: 18px; }
   .cta { background: var(--accent); color: var(--accent-ink); font-size: 14px; font-weight: 730; padding: 11px 17px; border-radius: 6px; text-decoration: none; }

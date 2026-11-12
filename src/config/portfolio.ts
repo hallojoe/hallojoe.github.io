@@ -1,3 +1,12 @@
+import type { AnimatedTextConfig } from '../lib/animated-text';
+
+export const headline = {
+  pretext: ['Together', 'Discover', 'Explore'],
+  posttext: ['things', 'ideas', 'tools'],
+  left: { effect: 'type', holdMs: 3600 },
+  right: { effect: 'spin-vertical', holdMs: 2400 },
+} satisfies AnimatedTextConfig;
+
 // Tag order controls the order of groups in every section.
 export const tags = ['3D', '.NET', 'Umbraco', 'Humans'] as const;
 export type Tag = typeof tags[number];

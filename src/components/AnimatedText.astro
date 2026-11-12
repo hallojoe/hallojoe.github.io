@@ -1,0 +1,40 @@
+---
+import type { AnimatedTextConfig } from '../lib/animated-text';
+
+interface Props {
+  config: AnimatedTextConfig;
+}
+
+const { pretext, posttext, separator = ' ', left, right } = Astro.props.config;
+const joiner = pretext.length && posttext.length ? separator : '';
+const parts = [
+  { words: pretext, options: left },
+  { words: posttext, options: right },
+];
+---
+<span class="sr-only">{pretext[0]}{joiner}{posttext[0]}</span><span aria-hidden="true">{parts.map(({ words, options }, index) => (
+  <>
+    {index === 1 && <span class="separator">{joiner}</span>}
+    {words.length > 0 && (
+      <text-sequence class:list={[{ posttext: index === 1 }]} data-options={JSON.stringify(options)}>
+        {words.map(word => <span data-word>{word}</span>)}
+        <span data-output>{words[0]}</span>
+      </text-sequence>
+    )}
+  </>
+))}</span>
+
+<script>
+  import '../scripts/text-sequence';
+</script>
+
+<style>
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .separator { white-space: pre-wrap; }
+  text-sequence { display: inline-grid; vertical-align: baseline; max-width: 100%; }
+  text-sequence > span { grid-area: 1 / 1; justify-self: start; overflow-wrap: anywhere; }
+  /* Reserve the longest word's space so typing never moves the other side. */
+  [data-word] { visibility: hidden; }
+  .posttext { color: var(--accent); }
+  :global([data-theme="times"]) .posttext { font-style: italic; font-weight: 500; }
+</style>
