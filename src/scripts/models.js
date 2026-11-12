@@ -184,4 +184,4 @@ function times() {
   return { model, effect, tilt: [.09, -.30, -.05] };
 }
 
-export const models = { matrix: terminal, comic, kittens: kitten, times };
+export const models = { original: terminal, matrix: terminal, comic, kittens: kitten, times };
