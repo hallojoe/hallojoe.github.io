@@ -1,0 +1,103 @@
+---
+interface Props {
+  githubUrl: string;
+}
+const { githubUrl } = Astro.props;
+const profiles = [
+  { name: 'GitHub', url: githubUrl },
+  { name: 'LinkedIn', url: 'https://www.linkedin.com/in/casperkorsgaard' },
+];
+const themes = [
+  ['original', 'Original', '#8299b8'],
+  ['matrix', 'Terminal matrix', '#63b95c'],
+  ['comic', 'Comic brutalistic', '#ecc43b'],
+  ['kittens', 'Cute Japanese kittens', '#e69bb4'],
+  ['times', 'Times', '#4055ba'],
+];
+---
+<button type="button" id="open-menu" aria-haspopup="dialog" aria-controls="site-menu" aria-expanded="false" hidden>
+  <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 5h14M3 10h14M3 15h14" fill="none" stroke="currentColor" stroke-width="1.6" /></svg>
+  Menu
+</button>
+<noscript><nav aria-label="Profiles">{profiles.map(profile => <a href={profile.url}>{profile.name}</a>)}</nav></noscript>
+
+<dialog id="site-menu" aria-labelledby="menu-title">
+  <div class="menu-heading">
+    <h2 id="menu-title">Site menu</h2>
+    <form method="dialog">
+      <button class="close" aria-label="Close menu" autofocus>
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m5 5 10 10m0-10L5 15" fill="none" stroke="currentColor" stroke-width="1.6" /></svg>
+      </button>
+    </form>
+  </div>
+  <fieldset>
+    <legend>Appearance</legend>
+    <label class="mode">Color mode
+      <select id="color-mode">
+        <option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option>
+      </select>
+    </label>
+    <fieldset class="themes">
+      <legend>Theme</legend>
+      {themes.map(([value, label, color]) => (
+        <label class="option">
+          <span class="swatch" style={{ '--swatch': color }}></span>{label}
+          <input type="radio" name="theme" value={value} checked={value === 'original'} />
+        </label>
+      ))}
+    </fieldset>
+  </fieldset>
+  <fieldset id="scene-options">
+    <legend>3D mascot</legend>
+    <label class="option">Scene effects <input type="checkbox" id="effects" checked /></label>
+    <label class="option">Wireframe <input type="checkbox" id="wireframe" /></label>
+  </fieldset>
+  <nav aria-labelledby="profiles-title">
+    <h3 id="profiles-title">Profiles</h3>
+    {profiles.map(profile => (
+      <a class="option" href={profile.url} target="_blank" rel="noopener noreferrer">{profile.name}<span aria-hidden="true">↗</span></a>
+    ))}
+  </nav>
+</dialog>
+
+<style>
+  button, select { color: inherit; font: inherit; cursor: pointer; }
+  button { border: 0; background: transparent; }
+  #open-menu, .close { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; }
+  #open-menu { gap: .45rem; padding: 0 .6rem; font-weight: 650; }
+  #open-menu[hidden] { display: none; }
+  button:hover, .option:hover { background: var(--shade); border-radius: var(--radius); }
+  svg { width: 1.15em; height: 1.15em; }
+  .close { width: 44px; }
+  dialog {
+    position: fixed; inset: 0 0 0 auto; margin: 0; width: min(23rem, 100%);
+    max-width: 100%; height: 100%; height: 100dvh; max-height: none;
+    padding: 1rem clamp(1rem, 4vw, 1.75rem) 2rem; overflow-y: auto; overscroll-behavior: contain;
+    border: 0; border-inline-start: 1px solid var(--rule); color: var(--ink); background: var(--page);
+  }
+  dialog::backdrop { background: rgb(0 0 0 / 38%); }
+  :global(html:has(#site-menu[open])) { overflow: hidden; }
+  .menu-heading, .mode, .option { display: flex; align-items: center; }
+  .menu-heading, .mode { justify-content: space-between; gap: 1rem; }
+  h2 { margin: 0; font-size: 1.5rem; letter-spacing: -.045em; }
+  fieldset { min-width: 0; margin: 0; padding: 0; border: 0; }
+  dialog > fieldset, dialog > nav { margin-top: 1.25rem; }
+  dialog > fieldset > legend, h3 {
+    width: 100%; margin: 0 0 .5rem; padding: 0 0 .4rem; border-bottom: 1px solid var(--rule);
+    color: var(--accent); font-size: .95rem; font-weight: 700;
+  }
+  .mode, .option { min-height: 44px; padding: .3rem .45rem; }
+  .mode select { padding: .3rem; border: 1px solid var(--rule); border-radius: .3rem; background: var(--card); }
+  .themes { margin-top: .65rem; }
+  .themes legend { color: var(--muted); font-size: .875rem; }
+  .option { gap: .65rem; cursor: pointer; text-decoration: none; }
+  .option input, .option span[aria-hidden] { margin-inline-start: auto; }
+  input { accent-color: var(--accent); width: 1rem; height: 1rem; }
+  :is(input, select):focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+  .swatch { width: .85em; height: .85em; border-radius: 50%; border: 1px solid var(--rule); background: var(--swatch); }
+  noscript nav { display: flex; gap: .75rem; }
+  @media (prefers-reduced-motion: no-preference) {
+    dialog[open] { animation: slide-in 180ms ease-out; }
+    @keyframes slide-in { from { transform: translateX(100%); } }
+  }
+</style>
