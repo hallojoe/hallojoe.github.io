@@ -1,8 +1,8 @@
 # hallojoe.github.io
 
-A personal one-page portfolio built with Astro and hosted on GitHub Pages.
+A personal portfolio built with Astro and hosted on GitHub Pages.
 
-The homepage displays GitHub profile details, curated repositories, gists, and reading links grouped by tag. Repository cards link to the live site when available and otherwise link to the source. Star counts appear from six stars upwards.
+The homepage displays GitHub profile details, the four newest reading links, followed by repositories and gists grouped by tag. Repository cards link to the live site when available and otherwise link to the source. Star counts appear from six stars upwards.
 
 Deployment is handled by `.github/workflows/deploy.yml` on commits to `main`, manual runs and a daily schedule. The build reads the configured repositories using the GitHub GraphQL API and verifies Pages URLs with the GitHub REST API.
 
@@ -18,7 +18,9 @@ Avoid committing any GitHub tokens.
 
 ## Curating the portfolio
 
-Edit [src/config/portfolio.ts](src/config/portfolio.ts) to add repositories by name under `hallojoe`, gists by ID and title, or links by URL and title. Each entry takes a nonempty tag list, for example `tags: ['Umbraco', '.NET']`. An entry appears under every tag you give it. Edit the shared `tags` array to add or reorder headings. Within each group, entries follow their order in the configuration. Empty groups are omitted.
+Edit [src/config/portfolio.ts](src/config/portfolio.ts) to add repositories by name under `hallojoe`, or gists by ID and title. Each entry takes a nonempty tag list, for example `tags: ['Umbraco', '.NET']`. An entry appears under every tag you give it. Edit the shared `tags` array to add or reorder headings. Within each group, entries follow their order in the configuration. Empty groups are omitted.
+
+Edit [src/pages/links.md](src/pages/links.md) to update the reading list and its introduction. Each entry has a stable ID, a date added in quoted YYYY-MM-DD form, a title, a URL, tags and a list of comments. Both pages sort newest first. Entries with the same date keep their order in the Markdown file. The homepage shows the comment count and links to the notes at `/links/#id`.
 
 The Astro build calls GitHub's public Gists REST API for each selected ID. It displays the custom title, the live description, detected language, file count and a link to the original gist. Only public gists owned by `hallojoe` are rendered. A temporarily unavailable gist is skipped so the rest of the site can still publish.
 

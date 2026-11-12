@@ -86,7 +86,14 @@ async function publishedPagesUrl(repo: Repository): Promise<string | null> {
   return null;
 }
 
-export async function getPortfolioData(): Promise<PortfolioData> {
+// Both static pages use the same profile and project data during the build.
+let buildData: Promise<PortfolioData> | undefined;
+export function getPortfolioData(): Promise<PortfolioData> {
+  if (!import.meta.env?.PROD) return fetchPortfolioData();
+  return buildData ??= fetchPortfolioData();
+}
+
+async function fetchPortfolioData(): Promise<PortfolioData> {
   const token = process.env.GITHUB_TOKEN || process.env.GH_TOKEN;
   if (!token) throw new Error('GITHUB_TOKEN is required during the Astro build');
   const response = await fetch('https://api.github.com/graphql', {

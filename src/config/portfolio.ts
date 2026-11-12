@@ -32,12 +32,15 @@ export const selectedGists = [
   { id: 'b2739eb8e19eed05d3965a733da1cff4', title: 'Danish computing pioneers', tags: ['Humans'] },
 ] satisfies (Tagged & { id: string; title: string })[];
 
-export const links = [
-  { title: 'Announcing .NET 11', url: 'https://devblogs.microsoft.com/dotnet/announcing-dotnet-11/', tags: ['.NET'] },
-  { title: 'Delivering skills in NuGet packages', url: 'https://devblogs.microsoft.com/dotnet/delivering-skills-in-nuget-packages/', tags: ['.NET'] },
-] satisfies (Tagged & { title: string; url: string })[];
-
 export function groupByTag<T extends Tagged>(items: readonly T[]) {
   return tags.map(tag => ({ tag, items: items.filter(item => item.tags.includes(tag)) }))
     .filter(group => group.items.length > 0);
+}
+
+export function sectionHeadline(title: string, items: readonly Tagged[]): AnimatedTextConfig {
+  return {
+    pretext: [title],
+    posttext: tags.filter(tag => items.some(item => item.tags.includes(tag))),
+    right: { effect: 'spin-vertical', holdMs: headline.right.holdMs * 2, spinMs: 960 },
+  };
 }
