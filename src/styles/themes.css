@@ -60,36 +60,6 @@
   background-repeat: no-repeat, repeat;
 }
 
-.header-actions, #appearance, .swatches { display: flex; align-items: center; }
-.header-actions { gap: 6px; margin-inline-start: auto; }
-#appearance { gap: 8px; }
-#appearance[hidden], #scene-widget[hidden] { display: none; }
-.header-actions button {
-  appearance: none; padding: 0; border: 0; background: transparent; color: var(--ink); cursor: pointer;
-}
-/* The transparent disclosure covers the stack until the individual choices are active. */
-.theme-picker { position: relative; --swatch-overlap: -17px; }
-.theme-toggle { position: absolute; inset: 0; z-index: 1; width: 100%; border-radius: 4px; }
-.theme-toggle[aria-expanded="true"] { pointer-events: none; }
-.swatches button { flex: none; display: grid; place-items: center; width: 26px; height: 32px; }
-.swatches button + button { transition: margin-inline-start 180ms ease-out; }
-.theme-toggle[aria-expanded="false"] + .swatches button + button { margin-inline-start: var(--swatch-overlap); }
-@media (prefers-reduced-motion: reduce) {
-  .swatches button + button { transition: none; }
-}
-.swatches button::before {
-  content: ''; width: 13px; height: 13px; border-radius: 50%;
-  background: var(--swatch); border: 1px solid color-mix(in srgb, var(--ink) 28%, transparent);
-}
-.swatches button[aria-pressed="true"]::before { outline: 1px solid var(--ink); outline-offset: 3px; }
-.mode-control, .profile-link {
-  display: grid; place-items: center; position: relative;
-  width: 32px; height: 32px; color: var(--soft-ink); border-radius: 50%;
-}
-.mode-control:hover, .profile-link:hover { color: var(--ink); background: var(--shade); }
-.mode-control select { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
-.mode-control:focus-within { outline: 2px solid var(--focus); outline-offset: 2px; }
-.mode-control svg, .profile-link svg { width: 19px; height: 19px; }
 .scene-slot { pointer-events: none; }
 #page-scene {
   position: fixed; z-index: 2; right: 8px; bottom: 5vh;
@@ -100,22 +70,11 @@
 #hero-scene { position: absolute; inset: -12px -4%; }
 #footer-scene { width: clamp(104px, 17vw, 150px); height: 105px; margin-left: auto; }
 #footer-scene:empty { display: none; }
+#scene-widget[hidden] { display: none; }
 #scene-widget { position: relative; width: 100%; height: 100%; }
 #scene-widget canvas { width: 100%; height: 100%; display: block; pointer-events: auto; touch-action: none; }
 #scene-widget canvas:focus-visible { outline: 2px solid var(--focus); }
-#scene-options { display: flex; align-items: center; gap: 1px; }
-#scene-options[hidden] { display: none; }
-#scene-options button {
-  display: grid; place-items: center; width: 32px; height: 32px;
-  color: var(--muted); border-radius: 50%; background: transparent;
-}
-#scene-options button[aria-pressed="true"] { color: var(--accent); background: var(--card); }
-#scene-options button:hover { outline: 1px solid var(--strong-rule); }
-#scene-options svg { width: 15px; height: 15px; }
 html[data-scene-ready] .portrait { visibility: hidden; }
 @media (max-width: 480px) {
-  .header-actions { gap: 0; }
-  #appearance { gap: 2px; }
-  .swatches button { width: 24px; }
   #hero-scene { inset: -6px -12%; }
 }
