@@ -38,10 +38,8 @@
   --highlight: light-dark(#46247e, #d7b5ff); --focus: light-dark(#223faa, #b8c6ff);
   --radius: 2px; --font: "Times New Roman", Times, serif;
 }
-:root[data-theme="times"] .topbar { border-bottom: 3px double var(--strong-rule); }
 :root[data-theme="times"] .project { box-shadow: inset 1px 1px var(--card), 2px 2px var(--shade); }
 :root[data-theme="times"] :is(h1, h2, h4) { letter-spacing: -.045em; }
-:root[data-theme="times"] h1 em { font-style: italic; font-weight: 500; }
 :root[data-theme="times"] :is(.project-links a, .reading-list a, .all-gists-link) {
   color: var(--accent); text-decoration: underline; text-underline-offset: .16em;
 }
