@@ -31,17 +31,17 @@ class TextSequence extends HTMLElement {
     this.stop();
     this.index = 0;
     this.output.textContent = this.words[0] ?? '';
-    if (!this.motion.matches && this.words.length > 1) this.hold();
+    if (!this.motion.matches && this.words.length > 1) this.hold(this.options.startDelayMs);
   };
 
-  private hold() {
+  private hold(startDelayMs = 0) {
     this.timer = window.setTimeout(() => {
       this.index = (this.index + 1) % this.words.length;
       const next = this.words[this.index];
       const { effect = 'type' } = this.options;
       if (effect === 'type') this.type(next);
       else this.flip(next, effect === 'spin-horizontal' ? 'rotateY' : 'rotateX');
-    }, this.options.holdMs ?? 2400);
+    }, (this.options.holdMs ?? 2400) + startDelayMs);
   }
 
   private type(next: string) {

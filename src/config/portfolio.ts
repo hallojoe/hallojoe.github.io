@@ -37,10 +37,16 @@ export function groupByTag<T extends Tagged>(items: readonly T[]) {
     .filter(group => group.items.length > 0);
 }
 
-export function sectionHeadline(title: string, items: readonly Tagged[]): AnimatedTextConfig {
+// Space the three spins evenly across one hold-and-spin cycle.
+const sectionHoldMs = headline.right.holdMs * 2;
+const sectionSpinMs = 960;
+const staggerMs = (sectionHoldMs + sectionSpinMs) / 3;
+const sectionStartDelayMs = { Links: 0, Projects: staggerMs, Gists: staggerMs * 2 };
+
+export function sectionHeadline(title: keyof typeof sectionStartDelayMs, items: readonly Tagged[]): AnimatedTextConfig {
   return {
     pretext: [title],
     posttext: tags.filter(tag => items.some(item => item.tags.includes(tag))),
-    right: { effect: 'spin-vertical', holdMs: headline.right.holdMs * 2, spinMs: 960 },
+    right: { effect: 'spin-vertical', holdMs: sectionHoldMs, spinMs: sectionSpinMs, startDelayMs: sectionStartDelayMs[title] },
   };
 }
