@@ -1,0 +1,22 @@
+---
+import SiteLayout from './SiteLayout.astro';
+import ReadingList from '../components/ReadingList.astro';
+import { headline } from '../config/portfolio';
+import { newestFirst, type ReadingLink } from '../lib/reading-links';
+import { getPortfolioData } from '../lib/github';
+
+interface Props {
+  frontmatter: { title: string; description: string; links: ReadingLink[] };
+}
+const { frontmatter } = Astro.props;
+const { profile } = await getPortfolioData();
+const heading = { ...headline, pretext: [frontmatter.title] };
+---
+<SiteLayout title={frontmatter.title + ' — ' + profile.name} description={frontmatter.description} {profile} {heading}>
+  <div class="intro"><slot /></div>
+  <ReadingList links={newestFirst(frontmatter.links)} showComments />
+</SiteLayout>
+
+<style>
+  .intro { max-width: 62ch; margin-bottom: 2rem; line-height: 1.65; color: var(--soft-ink); }
+</style>

@@ -1,7 +1,10 @@
 ---
-import '../styles/themes.css';
+import SiteLayout from '../layouts/SiteLayout.astro';
+import ReadingList from '../components/ReadingList.astro';
+import { frontmatter as readingPage } from './links.md';
+import { newestFirst } from '../lib/reading-links';
 import AnimatedText from '../components/AnimatedText.astro';
-import { groupByTag, headline, links } from '../config/portfolio';
+import { groupByTag, headline, sectionHeadline } from '../config/portfolio';
 import { getPortfolioData } from '../lib/github';
 import { getFeaturedGists } from '../lib/gists';
 import { existsSync } from 'node:fs';
@@ -18,235 +21,119 @@ const screenshotFor = (project: Project): string | null => {
   return existsSync(screenshotPath) ? '/screenshots/' + safeName + '.png' : null;
 };
 const projectCards = projects.map(project => ({ ...project, screenshot: screenshotFor(project) }));
+const links = newestFirst(readingPage.links);
 ---
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="color-scheme" content="light dark" />
-    <meta name="theme-color" content="#f4f7fa" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#101521" media="(prefers-color-scheme: dark)" />
-    <meta name="description" content={description} />
-    <meta property="og:type" content="website" />
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
-    <meta property="og:url" content="https://hallojoe.github.io/" />
-    <link rel="canonical" href="https://hallojoe.github.io/" />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <title>{title}</title>
-  </head>
-  <body>
-    <div class="scene-slot" id="page-scene"></div>
-    <div class="shell">
-      <header class="topbar">
-        <a class="wordmark" href="/" aria-label="Go to homepage">hallo<span>joe</span><b>.</b></a>
-        <div class="header-actions">
-          <div id="appearance" hidden>
-            <div class="theme-picker">
-              <button type="button" class="theme-toggle" aria-label="Choose theme" title="Choose theme"
-                aria-expanded="false" aria-controls="theme-choices"></button>
-              <div id="theme-choices" class="swatches" inert role="group" aria-label="Site theme">
-                {[
-                  ['original', 'Original', '#8299b8'], ['matrix', 'Terminal matrix l', '#63b95c'],
-                  ['comic', 'Comic brutalistic', '#ecc43b'], ['kittens', 'Cute japanese kittens', '#e69bb4'],
-                  ['times', 'Times', '#4055ba'],
-                ].map(([value, name, color]) => (
-                  <button type="button" data-theme-choice={value} style={{ '--swatch': color }}
-                    title={name} aria-label={name} aria-pressed={value === 'original'}></button>
-                ))}
-              </div>
-            </div>
-            <div id="scene-options" role="group" aria-label="3D scene controls">
-              <button type="button" id="effects" aria-label="Scene effects" title="Scene effects" aria-pressed="true">
-                <svg viewBox="0 0 20 20" aria-hidden="true"><path fill="currentColor" d="m8 2 1.7 5.3L15 9l-5.3 1.7L8 16l-1.7-5.3L1 9l5.3-1.7zm7 9 .9 2.6 2.6.9-2.6.9L15 18l-.9-2.6-2.6-.9 2.6-.9z"/></svg>
-              </button>
-              <button type="button" id="wireframe" aria-label="Wireframe" title="Wireframe" aria-pressed="false">
-                <svg viewBox="0 0 20 20" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" d="m10 2 7 4v8l-7 4-7-4V6zm0 8 7-4M3 6l7 4v8"/></svg>
-              </button>
-            </div>
-            <label class="mode-control">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1.6"/><path fill="currentColor" d="M12 4a8 8 0 0 1 0 16z"/></svg>
-              <select id="color-mode" aria-label="Color mode" title="Color mode">
-                <option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option>
-              </select>
-            </label>
-          </div>
-          <a class="profile-link" href={profile.url} target="_blank" rel="noopener noreferrer" title="GitHub profile" aria-label="GitHub profile">
-            <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82A7.65 7.65 0 0 1 8 3.86c.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
-          </a>
-        </div>
-      </header>
-
-      <main>
-        <section class="hero" aria-labelledby="headline">
-          <h1 id="headline"><AnimatedText config={headline} /></h1>
-          <div class="hero-art">
-            <div class="scene-slot" id="hero-scene">
-              <div id="scene-widget" hidden></div>
-            </div>
-            <aside class="portrait">
-              <div class="portrait-frame">
-                <img src={profile.avatarUrl} alt={'GitHub profile avatar for ' + profile.name} width="192" height="192" decoding="async" />
-              </div>
-            </aside>
-          </div>
-        </section>
-
-        <section class="work" id="work" aria-labelledby="work-title">
-          <div class="section-header">
-            <h2 id="work-title">Projects<span class="dot">.</span></h2>
-            <p class="section-caption">Featured GitHub projects.</p>
-          </div>
-
-          {projects.length > 0 ? (
-            groupByTag(projectCards).map(({ tag, items }) => (
-              <section class="tag-group">
-                <h3 class="eyebrow">{tag}</h3>
-                <div class="grid">
-                  {items.map((project, index) => (
-                    <article
-                      class:list={['project', { 'has-screenshot': project.screenshot }]}
-                      style={project.screenshot && { '--project-image': `url("${project.screenshot}")` }}
-                    >
-                      <div class="card-top">
-                        <span class="card-no">{String(index + 1).padStart(2, '0')} / REPO</span>
-                        <span class="corner-arrow" aria-hidden="true">↗</span>
-                      </div>
-                      <div class="project-content">
-                        <div class="card-main">
-                          <h4>{project.name}</h4>
-                          <p>{project.description || 'A project hosted on GitHub.'}</p>
-                        </div>
-                      </div>
-                      <div class="card-bottom">
-                        <div class="meta">
-                          {project.language && <span class="language"><i style={project.languageColor ? 'background-color:' + project.languageColor : ''}></i>{project.language}</span>}
-                          {project.stars > 5 && <span aria-label={project.stars + ' GitHub stars'}>☆ {project.stars}</span>}
-                        </div>
-                        <div class="project-links">
-                          {project.pagesUrl ? (
-                            <a class="live" href={project.pagesUrl} target="_blank" rel="noopener noreferrer" aria-label={'Live site for ' + project.name}>Live site ↗</a>
-                          ) : (
-                            <a href={project.repoUrl} target="_blank" rel="noopener noreferrer" aria-label={'Source code for ' + project.name}>Source code ↗</a>
-                          )}
-                        </div>
-                      </div>
-                    </article>
-                  ))}
-                </div>
-              </section>
-            ))
-          ) : (
-            <p class="empty">No projects have been selected yet.</p>
-          )}
-        </section>
-
-        <section class="work gists-section" id="gists" aria-labelledby="gists-title">
-          <div class="section-header">
-            <h2 id="gists-title">Selected gists<span class="dot">.</span></h2>
-            <a class="all-gists-link" href="https://gist.github.com/hallojoe" target="_blank" rel="noopener noreferrer">View all gists ↗</a>
-          </div>
-
-          {gists.length > 0 ? (
-            groupByTag(gists).map(({ tag, items }) => (
-              <section class="tag-group">
-                <h3 class="eyebrow">{tag}</h3>
-                <div class="grid">
-                  {items.map((gist, index) => (
-                    <article class="project gist-card">
-                      <div class="card-top">
-                        <span class="card-no">{String(index + 1).padStart(2, '0')} / GIST</span>
-                        <span class="corner-arrow" aria-hidden="true">↗</span>
-                      </div>
-                      <div class="card-main">
-                        <h4>{gist.title}</h4>
-                        <p>{gist.description || 'A technical note or useful code snippet.'}</p>
-                      </div>
-                      <div class="card-bottom">
-                        <div class="meta">
-                          {gist.language && <span class="language">{gist.language}</span>}
-                          <span>{gist.fileCount} {gist.fileCount === 1 ? 'file' : 'files'}</span>
-                        </div>
-                        <div class="project-links">
-                          <a class="live" href={gist.url} target="_blank" rel="noopener noreferrer" aria-label={'Read ' + gist.title + ' on GitHub Gist'}>Read gist ↗</a>
-                        </div>
-                      </div>
-                    </article>
-                  ))}
-                </div>
-              </section>
-            ))
-          ) : (
-            <p class="empty">Selected gists are currently unavailable. Browse them directly on <a href="https://gist.github.com/hallojoe">GitHub Gists</a>.</p>
-          )}
-        </section>
-
-        <section class="work" id="links" aria-labelledby="links-title">
-          <div class="section-header">
-            <h2 id="links-title">Links<span class="dot">.</span></h2>
-          </div>
-          {groupByTag(links).map(({ tag, items }) => (
-            <section class="tag-group">
-              <h3 class="eyebrow">{tag}</h3>
-              <ul class="reading-list">
-                {items.map(link => (
-                  <li><a href={link.url} target="_blank" rel="noopener noreferrer">
-                    {link.title}<span aria-hidden="true">↗</span>
-                  </a></li>
-                ))}
-              </ul>
-            </section>
-          ))}
-        </section>
-      </main>
-
-      <footer>
-        <span>© {new Date().getFullYear()} {profile.name}</span>
-        <span>Turtles all the way down <a href={profile.url} target="_blank" rel="noopener noreferrer">GitHub ↗</a></span>
-        <div class="scene-slot" id="footer-scene"></div>
-      </footer>
+<SiteLayout {title} {description} {profile} heading={headline}>
+  <section class="work" id="links" aria-labelledby="links-title">
+    <div class="section-header">
+      <h2 id="links-title"><AnimatedText config={sectionHeadline('Links', links)} /></h2>
+      <a class="section-link" href="/links/">View all links →</a>
     </div>
-  <script>
-    import '../scripts/appearance.js';
-  </script>
-  </body>
-</html>
+    <ReadingList links={links.slice(0, 4)} />
+  </section>
+
+  <section class="work" id="work" aria-labelledby="work-title">
+    <div class="section-header">
+      <h2 id="work-title"><AnimatedText config={sectionHeadline('Projects', projects)} /></h2>
+      <p class="section-caption">Featured GitHub projects.</p>
+    </div>
+
+    {projects.length > 0 ? (
+      groupByTag(projectCards).map(({ tag, items }) => (
+        <section class="tag-group">
+          <h3 class="eyebrow">{tag}</h3>
+          <div class="grid">
+            {items.map((project, index) => (
+              <article
+                class:list={['project', { 'has-screenshot': project.screenshot }]}
+                style={project.screenshot && { '--project-image': `url("${project.screenshot}")` }}
+              >
+                <div class="card-top">
+                  <span class="card-no">{String(index + 1).padStart(2, '0')} / REPO</span>
+                  <span class="corner-arrow" aria-hidden="true">↗</span>
+                </div>
+                <div class="project-content">
+                  <div class="card-main">
+                    <h4>{project.name}</h4>
+                    <p>{project.description || 'A project hosted on GitHub.'}</p>
+                  </div>
+                </div>
+                <div class="card-bottom">
+                  <div class="meta">
+                    {project.language && <span class="language"><i style={project.languageColor ? 'background-color:' + project.languageColor : ''}></i>{project.language}</span>}
+                    {project.stars > 5 && <span aria-label={project.stars + ' GitHub stars'}>☆ {project.stars}</span>}
+                  </div>
+                  <div class="project-links">
+                    {project.pagesUrl ? (
+                      <a class="live" href={project.pagesUrl} target="_blank" rel="noopener noreferrer" aria-label={'Live site for ' + project.name}>Live site ↗</a>
+                    ) : (
+                      <a href={project.repoUrl} target="_blank" rel="noopener noreferrer" aria-label={'Source code for ' + project.name}>Source code ↗</a>
+                    )}
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+      ))
+    ) : (
+      <p class="empty">No projects have been selected yet.</p>
+    )}
+  </section>
+
+  <section class="work gists-section" id="gists" aria-labelledby="gists-title">
+    <div class="section-header">
+      <h2 id="gists-title"><AnimatedText config={sectionHeadline('Gists', gists)} /></h2>
+      <a class="section-link" href="https://gist.github.com/hallojoe" target="_blank" rel="noopener noreferrer">View all gists ↗</a>
+    </div>
+
+    {gists.length > 0 ? (
+      groupByTag(gists).map(({ tag, items }) => (
+        <section class="tag-group">
+          <h3 class="eyebrow">{tag}</h3>
+          <div class="grid">
+            {items.map((gist, index) => (
+              <article class="project gist-card">
+                <div class="card-top">
+                  <span class="card-no">{String(index + 1).padStart(2, '0')} / GIST</span>
+                  <span class="corner-arrow" aria-hidden="true">↗</span>
+                </div>
+                <div class="card-main">
+                  <h4>{gist.title}</h4>
+                  <p>{gist.description || 'A technical note or useful code snippet.'}</p>
+                </div>
+                <div class="card-bottom">
+                  <div class="meta">
+                    {gist.language && <span class="language">{gist.language}</span>}
+                    <span>{gist.fileCount} {gist.fileCount === 1 ? 'file' : 'files'}</span>
+                  </div>
+                  <div class="project-links">
+                    <a class="live" href={gist.url} target="_blank" rel="noopener noreferrer" aria-label={'Read ' + gist.title + ' on GitHub Gist'}>Read gist ↗</a>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+      ))
+    ) : (
+      <p class="empty">Selected gists are currently unavailable. Browse them directly on <a href="https://gist.github.com/hallojoe">GitHub Gists</a>.</p>
+    )}
+  </section>
+</SiteLayout>
 
 <style>
-  :global(*) { box-sizing: border-box; }
-  :global(html) { scroll-behavior: smooth; }
-  :global(body) { margin: 0; background-color: var(--page); color: var(--ink); font-family: var(--font); -webkit-font-smoothing: antialiased; }
-  :global(a) { color: inherit; }
-  :global(:is(a, button):focus-visible) { outline: 3px solid var(--focus); outline-offset: 4px; border-radius: 4px; }
-  :global(::selection) { background: var(--focus); color: var(--page); }
-  .shell { position: relative; z-index: 1; max-width: 1168px; margin: auto; padding: 0 40px; }
-  .topbar { min-height: 64px; display: flex; justify-content: space-between; align-items: center; gap: 16px; }
-  .wordmark { text-decoration: none; font-size: 25px; font-weight: 760; letter-spacing: -.07em; }
-  .wordmark span { color: var(--muted); }
-  .wordmark b, .dot { color: var(--accent); }
-  .hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(150px, 34%); align-items: center; gap: 40px; padding: clamp(24px, 3vw, 40px) 0; }
   .eyebrow { text-transform: uppercase; letter-spacing: .17em; font-size: 11px; font-weight: 700; color: var(--accent); display: flex; align-items: center; gap: 13px; }
-  h1 { font-size: clamp(40px, 5.8vw, 76px); letter-spacing: -.075em; font-weight: 680; line-height: 1.08; margin: 10px 0 8px; }
-  .hero-art { position: relative; display: grid; place-items: center; align-self: stretch; }
-  .portrait { align-self: center; justify-self: center; text-align: center; }
-  .portrait-frame { background: var(--card); width: fit-content; margin: auto; padding: 7px; border: 1px solid var(--strong-rule); border-radius: 22px; box-shadow: 8px 8px 0 -4px var(--shade); transform: rotate(4deg); }
-  .portrait-frame img { width: 98px; height: 98px; object-fit: cover; border-radius: 12px; display: block; }
   .work { border-top: 1px solid var(--rule); padding: 40px 0 76px; }
   .gists-section { padding-top: 48px; }
   .gist-card { min-height: 250px; }
-  .all-gists-link { font-size: 14px; color: var(--accent); text-decoration: none; margin-bottom: 8px; }
-  .all-gists-link:hover { text-decoration: underline; }
+  .section-link { font-size: 14px; color: var(--accent); text-decoration: none; margin-bottom: 8px; }
+  .section-link:hover { text-decoration: underline; }
   .section-header { display: flex; justify-content: space-between; align-items: end; gap: 30px; margin-bottom: 38px; }
   .section-header h2 { font-size: clamp(37px, 4vw, 52px); line-height: 1.1; letter-spacing: -.055em; margin: 14px 0 0; }
   .section-caption { font-size: 14px; line-height: 1.6; color: var(--muted); max-width: 240px; text-align: right; }
   .tag-group + .tag-group { margin-top: 36px; }
   .tag-group > .eyebrow { margin: 0 0 14px; }
-  .reading-list { list-style: none; margin: 0; padding: 0; }
-  .reading-list li { border-top: 1px solid var(--rule); }
-  .reading-list a { display: flex; justify-content: space-between; gap: 16px; padding: 16px 0; text-decoration: none; }
-  .reading-list a:hover { text-decoration: underline; }
-  .reading-list a span { color: var(--accent); }
   .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
   .project { background: var(--card); border: 1px solid var(--rule); border-radius: var(--radius); padding: 27px; min-height: 290px; display: flex; flex-direction: column; justify-content: space-between; transition: border-color .2s, transform .2s; }
   .project:hover { border-color: var(--highlight); transform: translateY(-3px); }
@@ -285,30 +172,16 @@ const projectCards = projects.map(project => ({ ...project, screenshot: screensh
   .project-links a:hover { text-decoration: underline; }
   .project-links .live { color: var(--accent); }
   .empty { background: var(--card); border: 1px solid var(--rule); border-radius: var(--radius); padding: 30px; color: var(--soft-ink); }
-  footer { flex-wrap: wrap; align-items: baseline; border-top: 1px solid var(--rule); display: flex; justify-content: space-between; gap: 20px; padding: 28px 0 40px; font-size: 12px; color: var(--muted); }
-  footer a { color: var(--accent); text-decoration: none; }
   @media (max-width: 780px) {
-    .shell { padding: 0 22px; }
-    .topbar { min-height: 56px; }
-    .hero { grid-template-columns: minmax(0, 1fr) 26%; gap: 10px; }
-    .portrait-frame img { width: 64px; height: 64px; }
     .section-header { align-items: start; flex-direction: column; gap: 8px; }
     .section-caption { max-width: 400px; text-align: left; }
     .grid { grid-template-columns: 1fr; }
     .work { padding: 28px 0 60px; }
   }
-  @media (max-width: 380px) {
-    .topbar { gap: 4px; }
-    .wordmark { font-size: 20px; }
-  }
   @media (max-width: 480px) {
-    .topbar { flex-wrap: wrap; }
     .project { padding: 22px; }
-    h1 { font-size: clamp(32px, 8vw, 40px); }
-    footer { column-gap: 12px; row-gap: 8px; }
   }
   @media (prefers-reduced-motion: reduce) {
-    :global(html) { scroll-behavior: auto; }
     .project { transition: none; }
     .project:hover { transform: none; }
     .has-screenshot::before, .has-screenshot:is(:hover, :focus-within)::before { transition: none; transform: none; }

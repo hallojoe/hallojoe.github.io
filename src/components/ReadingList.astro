@@ -1,0 +1,45 @@
+---
+import type { ReadingLink } from '../lib/reading-links';
+
+interface Props {
+  links: ReadingLink[];
+  showComments?: boolean;
+}
+
+const { links, showComments = false } = Astro.props;
+const commentCount = (count: number) => count + (count === 1 ? ' comment' : ' comments');
+const formatDate = new Intl.DateTimeFormat('en', { dateStyle: 'medium', timeZone: 'UTC' });
+---
+<ul class="reading-list">
+  {links.map(link => (
+    <li id={showComments ? link.id : undefined}>
+      <time datetime={link.date}>{formatDate.format(new Date(link.date))}</time>
+      <a class="title" href={link.url} target="_blank" rel="noopener noreferrer">{link.title} <span aria-hidden="true">↗</span></a>
+      {showComments ? (
+        link.comments.length > 0 && <ul class="comments">{link.comments.map(comment => <li>{comment}</li>)}</ul>
+      ) : (
+        <a class="count" href={'/links/#' + link.id} aria-label={`${commentCount(link.comments.length)} on ${link.title}`}>
+          {commentCount(link.comments.length)}
+        </a>
+      )}
+    </li>
+  ))}
+</ul>
+
+<style>
+  .reading-list { list-style: none; margin: 0; padding: 0; }
+  .reading-list > li { display: grid; grid-template-columns: 8em minmax(0, 1fr) auto; align-items: baseline; gap: 6px 18px; padding: 16px 0; border-top: 1px solid var(--rule); scroll-margin-top: 1rem; }
+  time, .count { color: var(--muted); font-size: .875rem; }
+  .title { text-decoration: none; font-weight: 600; }
+  .title:hover { text-decoration: underline; }
+  .title span { color: var(--accent); }
+  .count { text-underline-offset: .18em; }
+  .comments { grid-column: 2 / -1; list-style: none; margin: 0; padding: 0; max-width: 65ch; color: var(--soft-ink); line-height: 1.55; }
+  .comments li + li { margin-top: .5em; }
+  @media (max-width: 600px) {
+    .reading-list > li { grid-template-columns: 1fr auto; }
+    time { grid-column: 1; grid-row: 1; }
+    .count { grid-column: 2; grid-row: 1; }
+    .title, .comments { grid-column: 1 / -1; }
+  }
+</style>

@@ -40,7 +40,7 @@
 }
 :root[data-theme="times"] .project { box-shadow: inset 1px 1px var(--card), 2px 2px var(--shade); }
 :root[data-theme="times"] :is(h1, h2, h4) { letter-spacing: -.045em; }
-:root[data-theme="times"] :is(.project-links a, .reading-list a, .all-gists-link) {
+:root[data-theme="times"] :is(.project-links a, .reading-list a, .section-link) {
   color: var(--accent); text-decoration: underline; text-underline-offset: .16em;
 }
 :root[data-theme="times"] .eyebrow { font-family: ui-monospace, monospace; }
