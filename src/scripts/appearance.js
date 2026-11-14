@@ -1,8 +1,7 @@
 const root = document.documentElement;
-const menu = document.querySelector('#site-menu');
-const opener = document.querySelector('#open-menu');
-const themes = [...menu.querySelectorAll('input[name="theme"]')];
-const mode = menu.querySelector('#color-mode');
+const panel = document.querySelector('#site-settings');
+const themes = [...panel.querySelectorAll('input[name="theme"]')];
+const mode = panel.querySelector('#color-mode');
 const controls = document.querySelector('#scene-options');
 const effects = controls.querySelector('#effects');
 const wireframe = controls.querySelector('#wireframe');
@@ -47,22 +46,6 @@ function saveAndRender() {
   render();
 }
 
-opener.addEventListener('click', () => {
-  menu.showModal();
-  opener.setAttribute('aria-expanded', 'true');
-});
-// Escape and the Close button both use the native dialog close behavior.
-menu.addEventListener('close', () => {
-  opener.setAttribute('aria-expanded', 'false');
-  opener.focus({ preventScroll: true });
-});
-menu.addEventListener('click', event => {
-  if (event.target !== menu) return;
-  const rect = menu.getBoundingClientRect();
-  if (event.clientX < rect.left || event.clientX > rect.right ||
-      event.clientY < rect.top || event.clientY > rect.bottom) menu.close();
-});
-
 for (const radio of themes) radio.addEventListener('change', () => {
   settings.theme = radio.value;
   saveAndRender();
@@ -77,5 +60,5 @@ wireframe.addEventListener('change', () => {
   saveAndRender();
 });
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change', updateBrowserColor);
-opener.hidden = false;
+document.querySelector('#open-settings').hidden = false;
 render();

@@ -15,20 +15,38 @@ const themes = [
   ['times', 'Times', '#4055ba'],
 ];
 ---
-<button type="button" id="open-menu" aria-haspopup="dialog" aria-controls="site-menu" aria-expanded="false" hidden>
-  <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 5h14M3 10h14M3 15h14" fill="none" stroke="currentColor" stroke-width="1.6" /></svg>
-  Menu
-</button>
-<noscript><nav aria-label="Profiles">{profiles.map(profile => <a href={profile.url}>{profile.name}</a>)}</nav></noscript>
+<div class="panel-controls">
+  <button type="button" popovertarget="site-menu" aria-label="Menu" title="Menu">
+    <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 5h14M3 10h14M3 15h14" /></svg>
+  </button>
+  <button type="button" id="open-settings" popovertarget="site-settings" aria-label="Settings" title="Settings" hidden>
+    <svg viewBox="0 0 20 20" aria-hidden="true">
+      <path d="M3 6h4m4 0h6M3 14h8m4 0h2" /><circle cx="9" cy="6" r="2" /><circle cx="13" cy="14" r="2" />
+    </svg>
+  </button>
+</div>
 
-<dialog id="site-menu" aria-labelledby="menu-title">
-  <div class="menu-heading">
-    <h2 id="menu-title">Site menu</h2>
-    <form method="dialog">
-      <button class="close" aria-label="Close menu" autofocus>
-        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m5 5 10 10m0-10L5 15" fill="none" stroke="currentColor" stroke-width="1.6" /></svg>
-      </button>
-    </form>
+<aside id="site-menu" class="panel" popover="auto" aria-labelledby="menu-title">
+  <div class="panel-heading">
+    <h2 id="menu-title">Menu</h2>
+    <button type="button" class="close" popovertarget="site-menu" popovertargetaction="hide" aria-label="Close menu">×</button>
+  </div>
+  <nav aria-label="Pages">
+    <a class="option" href="/" aria-current={Astro.url.pathname === '/' ? 'page' : undefined}>Home</a>
+    <a class="option" href="/links/" aria-current={Astro.url.pathname.replace(/\/$/, '') === '/links' ? 'page' : undefined}>Links</a>
+  </nav>
+  <nav aria-labelledby="profiles-title">
+    <h3 id="profiles-title">Profiles</h3>
+    {profiles.map(profile => (
+      <a class="option" href={profile.url} target="_blank" rel="noopener noreferrer">{profile.name}<span aria-hidden="true">↗</span></a>
+    ))}
+  </nav>
+</aside>
+
+<aside id="site-settings" class="panel" popover="auto" aria-labelledby="settings-title">
+  <div class="panel-heading">
+    <h2 id="settings-title">Settings</h2>
+    <button type="button" class="close" popovertarget="site-settings" popovertargetaction="hide" aria-label="Close settings">×</button>
   </div>
   <fieldset>
     <legend>Appearance</legend>
@@ -52,37 +70,38 @@ const themes = [
     <label class="option">Scene effects <input type="checkbox" id="effects" checked /></label>
     <label class="option">Wireframe <input type="checkbox" id="wireframe" /></label>
   </fieldset>
-  <nav aria-labelledby="profiles-title">
-    <h3 id="profiles-title">Profiles</h3>
-    {profiles.map(profile => (
-      <a class="option" href={profile.url} target="_blank" rel="noopener noreferrer">{profile.name}<span aria-hidden="true">↗</span></a>
-    ))}
-  </nav>
-</dialog>
+</aside>
 
 <style>
   button, select { color: inherit; font: inherit; cursor: pointer; }
   button { border: 0; background: transparent; }
-  #open-menu, .close { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; }
-  #open-menu { gap: .45rem; padding: 0 .6rem; font-weight: 650; }
-  #open-menu[hidden] { display: none; }
-  button:hover, .option:hover { background: var(--shade); border-radius: var(--radius); }
-  svg { width: 1.15em; height: 1.15em; }
-  .close { width: 44px; }
-  dialog {
-    position: fixed; inset: 0 0 0 auto; margin: 0; width: min(23rem, 100%);
-    max-width: 100%; height: 100%; height: 100dvh; max-height: none;
-    padding: 1rem clamp(1rem, 4vw, 1.75rem) 2rem; overflow-y: auto; overscroll-behavior: contain;
-    border: 0; border-inline-start: 1px solid var(--rule); color: var(--ink); background: var(--page);
+  .panel-controls {
+    position: fixed; top: max(.5rem, env(safe-area-inset-top)); right: max(.5rem, env(safe-area-inset-right));
+    z-index: 3; display: grid; gap: .25rem;
   }
-  dialog::backdrop { background: rgb(0 0 0 / 38%); }
-  :global(html:has(#site-menu[open])) { overflow: hidden; }
-  .menu-heading, .mode, .option { display: flex; align-items: center; }
-  .menu-heading, .mode { justify-content: space-between; gap: 1rem; }
+  .panel-controls button, .close {
+    display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border-radius: var(--radius);
+  }
+  .panel-controls button { color: var(--ink); background: var(--card); border: 1px solid var(--rule); }
+  .panel-controls button[hidden] { display: none; }
+  button:hover, .option:hover { background: var(--shade); border-radius: var(--radius); }
+  .panel-controls svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; }
+  .close { font-size: 1.5rem; }
+  .panel {
+    position: fixed; top: max(.5rem, env(safe-area-inset-top)); right: calc(max(.5rem, env(safe-area-inset-right)) + 52px);
+    bottom: auto; left: auto; margin: 0; width: min(22rem, calc(100% - 68px - env(safe-area-inset-right)));
+    max-height: calc(100dvh - 1rem - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+    padding: .75rem 1rem 1rem; overflow-y: auto; overscroll-behavior: contain;
+    border: 1px solid var(--rule); border-radius: var(--radius); box-shadow: 0 .5rem 1.75rem rgb(0 0 0 / 16%);
+    color: var(--ink); background: var(--page);
+  }
+  .panel-heading, .mode, .option { display: flex; align-items: center; }
+  .panel-heading, .mode { justify-content: space-between; gap: 1rem; }
+  a[aria-current="page"] { color: var(--accent); font-weight: 700; }
   h2 { margin: 0; font-size: 1.5rem; letter-spacing: -.045em; }
   fieldset { min-width: 0; margin: 0; padding: 0; border: 0; }
-  dialog > fieldset, dialog > nav { margin-top: 1.25rem; }
-  dialog > fieldset > legend, h3 {
+  .panel > fieldset, .panel > nav { margin-top: 1.25rem; }
+  .panel > fieldset > legend, h3 {
     width: 100%; margin: 0 0 .5rem; padding: 0 0 .4rem; border-bottom: 1px solid var(--rule);
     color: var(--accent); font-size: .95rem; font-weight: 700;
   }
@@ -95,9 +114,8 @@ const themes = [
   input { accent-color: var(--accent); width: 1rem; height: 1rem; }
   :is(input, select):focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
   .swatch { width: .85em; height: .85em; border-radius: 50%; border: 1px solid var(--rule); background: var(--swatch); }
-  noscript nav { display: flex; gap: .75rem; }
   @media (prefers-reduced-motion: no-preference) {
-    dialog[open] { animation: slide-in 180ms ease-out; }
-    @keyframes slide-in { from { transform: translateX(100%); } }
+    .panel:popover-open { animation: slide-in 180ms ease-out; }
+    @keyframes slide-in { from { transform: translateX(.375rem); } }
   }
 </style>
