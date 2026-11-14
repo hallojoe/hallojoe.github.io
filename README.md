@@ -28,7 +28,7 @@ The existing daily GitHub Actions build refreshes the gist cards automatically; 
 
 ## Automatic landscape tablet screenshots
 
-The GitHub Pages deployment workflow generates screenshots from the configured repositories that publish a GitHub Pages URL. During each push to `main`, manual deployment, and daily rebuild, it installs Playwright Chromium, visits each live project at a **1024 × 768 landscape tablet viewport**, waits for the page to render, and saves a PNG in `public/screenshots/<repository>.png`. Astro uses each successful capture as its card’s background. A theme-colored gradient protects the text, and hover or keyboard focus reveals more of the image.
+The GitHub Pages deployment workflow generates screenshots from the configured repositories that publish a GitHub Pages URL. During each push to `main`, manual deployment, and daily rebuild, it installs Playwright Chromium, visits each live project at a **1024 × 768 landscape tablet viewport**, waits for the page to render, and saves a PNG in `public/screenshots/<repository>.png`. Captured images appear only inside the pointer-following reveal. Cards use the theme background at rest, and keyboard focus adds a stationary tint.
 
 Screenshots are generated during deployment. If a capture fails, the card still shows its live-site link on a plain background.
 

@@ -146,14 +146,6 @@ const links = newestFirst(readingPage.links);
   .card-main h4 { font-size: 28px; letter-spacing: -.045em; font-weight: 660; margin: 16px 0 11px; overflow-wrap: anywhere; }
   .card-main p { color: var(--muted); font-size: 14px; line-height: 1.6; max-width: 420px; margin: 0; }
   .project-content { min-width: 0; margin-top: 12px; }
-  .has-screenshot {
-    --screenshot-wash: light-dark(rgb(255 255 255 / 48%), transparent);
-  }
-  .has-screenshot::before {
-    content: ''; position: absolute; inset: 0; z-index: -3; pointer-events: none;
-    background: linear-gradient(var(--screenshot-wash), var(--screenshot-wash)), var(--project-image) center / cover no-repeat;
-    opacity: .54; filter: saturate(.7);
-  }
   /* Keep the copy and actions on a surface matched to the current theme. */
   .screenshot-scrim {
     position: absolute; inset: 0; z-index: -1; pointer-events: none;
