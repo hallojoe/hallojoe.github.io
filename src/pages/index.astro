@@ -1,5 +1,6 @@
 ---
 import SiteLayout from '../layouts/SiteLayout.astro';
+import CardRevealGroup from '../components/CardRevealGroup.astro';
 import ReadingList from '../components/ReadingList.astro';
 import { frontmatter as readingPage } from './links.md';
 import { newestFirst } from '../lib/reading-links';
@@ -42,12 +43,14 @@ const links = newestFirst(readingPage.links);
       groupByTag(projectCards).map(({ tag, items }) => (
         <section class="tag-group">
           <h3 class="eyebrow">{tag}</h3>
-          <div class="grid">
+          <CardRevealGroup>
             {items.map((project, index) => (
               <article
+                data-reveal-card
                 class:list={['project', { 'has-screenshot': project.screenshot }]}
                 style={project.screenshot && { '--project-image': `url("${project.screenshot}")` }}
               >
+                {project.screenshot && <span class="screenshot-scrim" aria-hidden="true"></span>}
                 <div class="card-top">
                   <span class="card-no">{String(index + 1).padStart(2, '0')} / REPO</span>
                   <span class="corner-arrow" aria-hidden="true">↗</span>
@@ -73,7 +76,7 @@ const links = newestFirst(readingPage.links);
                 </div>
               </article>
             ))}
-          </div>
+          </CardRevealGroup>
         </section>
       ))
     ) : (
@@ -91,9 +94,9 @@ const links = newestFirst(readingPage.links);
       groupByTag(gists).map(({ tag, items }) => (
         <section class="tag-group">
           <h3 class="eyebrow">{tag}</h3>
-          <div class="grid">
+          <CardRevealGroup>
             {items.map((gist, index) => (
-              <article class="project gist-card">
+              <article class="project gist-card" data-reveal-card>
                 <div class="card-top">
                   <span class="card-no">{String(index + 1).padStart(2, '0')} / GIST</span>
                   <span class="corner-arrow" aria-hidden="true">↗</span>
@@ -113,7 +116,7 @@ const links = newestFirst(readingPage.links);
                 </div>
               </article>
             ))}
-          </div>
+          </CardRevealGroup>
         </section>
       ))
     ) : (
@@ -134,9 +137,8 @@ const links = newestFirst(readingPage.links);
   .section-caption { font-size: 14px; line-height: 1.6; color: var(--muted); max-width: 240px; text-align: right; }
   .tag-group + .tag-group { margin-top: 36px; }
   .tag-group > .eyebrow { margin: 0 0 14px; }
-  .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
-  .project { background: var(--card); border: 1px solid var(--rule); border-radius: var(--radius); padding: 27px; min-height: 290px; display: flex; flex-direction: column; justify-content: space-between; transition: border-color .2s, transform .2s; }
-  .project:hover { border-color: var(--highlight); transform: translateY(-3px); }
+  .project { background: var(--card); border: 1px solid var(--rule); border-radius: var(--radius); padding: 27px; min-height: 290px; display: flex; flex-direction: column; justify-content: space-between; transition: border-color .2s; }
+  .project:hover { border-color: var(--highlight); }
   .card-top, .card-bottom { display: flex; justify-content: space-between; gap: 12px; }
   .card-top { align-items: center; }
   .card-no { font-size: 11px; letter-spacing: .12em; color: var(--muted); font-weight: 700; }
@@ -145,18 +147,16 @@ const links = newestFirst(readingPage.links);
   .card-main p { color: var(--muted); font-size: 14px; line-height: 1.6; max-width: 420px; margin: 0; }
   .project-content { min-width: 0; margin-top: 12px; }
   .has-screenshot {
-    position: relative; isolation: isolate; overflow: hidden;
     --screenshot-wash: light-dark(rgb(255 255 255 / 48%), transparent);
   }
   .has-screenshot::before {
-    content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+    content: ''; position: absolute; inset: 0; z-index: -3; pointer-events: none;
     background: linear-gradient(var(--screenshot-wash), var(--screenshot-wash)), var(--project-image) center / cover no-repeat;
     opacity: .54; filter: saturate(.7);
-    transition: opacity .25s ease, transform .35s ease;
   }
   /* Keep the copy and actions on a surface matched to the current theme. */
-  .has-screenshot::after {
-    content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  .screenshot-scrim {
+    position: absolute; inset: 0; z-index: -1; pointer-events: none;
     background:
       linear-gradient(to top, var(--card), transparent 60%),
       linear-gradient(105deg, var(--card) 2%, color-mix(in srgb, var(--card) 82%, transparent) 56%, transparent);
@@ -165,8 +165,6 @@ const links = newestFirst(readingPage.links);
   .has-screenshot .corner-arrow { color: var(--ink); }
   .has-screenshot .live::after { content: ''; position: absolute; inset: 0; }
   .has-screenshot:focus-within { outline: 2px solid var(--focus); outline-offset: 2px; }
-  .has-screenshot:is(:hover, :focus-within) { --screenshot-wash: light-dark(rgb(255 255 255 / 34%), transparent); }
-  .has-screenshot:is(:hover, :focus-within)::before { opacity: .7; transform: scale(1.025); }
   .card-bottom { border-top: 1px solid var(--rule); padding-top: 19px; margin-top: 29px; flex-wrap: wrap; align-items: center; }
   .meta { display: flex; align-items: center; gap: 15px; color: var(--muted); font-size: 12px; }
   .language { display: flex; align-items: center; gap: 6px; }
@@ -179,7 +177,6 @@ const links = newestFirst(readingPage.links);
   @media (max-width: 780px) {
     .section-header { align-items: start; flex-direction: column; gap: 8px; }
     .section-caption { max-width: 400px; text-align: left; }
-    .grid { grid-template-columns: 1fr; }
     .work { padding: 28px 0 60px; }
   }
   @media (max-width: 480px) {
@@ -187,7 +184,5 @@ const links = newestFirst(readingPage.links);
   }
   @media (prefers-reduced-motion: reduce) {
     .project { transition: none; }
-    .project:hover { transform: none; }
-    .has-screenshot::before, .has-screenshot:is(:hover, :focus-within)::before { transition: none; transform: none; }
   }
 </style>

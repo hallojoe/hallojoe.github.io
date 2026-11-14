@@ -1,0 +1,38 @@
+<card-reveal-group><slot /></card-reveal-group>
+
+<script>
+  import '../scripts/card-reveal-group';
+</script>
+
+<style>
+  card-reveal-group { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+  @media (max-width: 780px) {
+    card-reveal-group { grid-template-columns: 1fr; }
+  }
+
+  card-reveal-group > :global([data-reveal-card]) {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+  }
+  card-reveal-group > :global([data-reveal-card])::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+    pointer-events: none;
+    background: var(--project-image, none) center / cover no-repeat, var(--reveal-color, color-mix(in srgb, var(--accent) 22%, var(--card)));
+    mask-image: radial-gradient(circle var(--reveal-radius, 9rem) at var(--reveal-x, 50%) var(--reveal-y, 50%), black 24%, transparent 100%);
+    opacity: 0;
+    transition: opacity 160ms ease-out;
+  }
+  card-reveal-group[data-tracking] > :global([data-reveal-card])::after { opacity: .8; }
+  card-reveal-group:not([data-tracking]) > :global([data-reveal-card]:has(:focus-visible))::after {
+    --reveal-x: 50%;
+    --reveal-y: 50%;
+    opacity: .65;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    card-reveal-group > :global([data-reveal-card])::after { transition: none; }
+  }
+</style>
