@@ -25,14 +25,6 @@ const projectCards = projects.map(project => ({ ...project, screenshot: screensh
 const links = newestFirst(readingPage.links);
 ---
 <SiteLayout {title} {description} {profile} heading={headline}>
-  <section class="work" id="links" aria-labelledby="links-title">
-    <div class="section-header">
-      <h2 id="links-title"><AnimatedText config={sectionHeadline('Links', links)} /></h2>
-      <a class="section-link" href="/links/">View all links →</a>
-    </div>
-    <ReadingList links={links.slice(0, 4)} />
-  </section>
-
   <section class="work" id="work" aria-labelledby="work-title">
     <div class="section-header">
       <h2 id="work-title"><AnimatedText config={sectionHeadline('Projects', projects)} /></h2>
@@ -82,6 +74,14 @@ const links = newestFirst(readingPage.links);
     ) : (
       <p class="empty">No projects have been selected yet.</p>
     )}
+  </section>
+
+  <section class="work" id="links" aria-labelledby="links-title">
+    <div class="section-header">
+      <h2 id="links-title"><AnimatedText config={sectionHeadline('Links', links)} /></h2>
+      <a class="section-link" href="/links/">View all links →</a>
+    </div>
+    <ReadingList links={links.slice(0, 4)} />
   </section>
 
   <section class="work gists-section" id="gists" aria-labelledby="gists-title">

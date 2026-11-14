@@ -2,7 +2,7 @@
 
 A personal portfolio built with Astro and hosted on GitHub Pages.
 
-The homepage displays GitHub profile details, the four newest reading links, followed by repositories and gists grouped by tag. Repository cards link to the live site when available and otherwise link to the source. Star counts appear from six stars upwards.
+The homepage shows repositories grouped by tag, followed by the four newest reading links and then gists grouped by tag. Repository cards link to the live site when available and otherwise link to the source. Star counts appear from six stars upwards.
 
 Deployment is handled by `.github/workflows/deploy.yml` on commits to `main`, manual runs and a daily schedule. The build reads the configured repositories using the GitHub GraphQL API and verifies Pages URLs with the GitHub REST API.
 

@@ -7,7 +7,7 @@ export const headline = {
 } satisfies AnimatedTextConfig;
 
 // Tag order controls the order of groups in every section.
-export const tags = ['3D', '.NET', 'Umbraco', 'Humans'] as const;
+export const tags = ['.NET', 'Umbraco', '3D', 'Humans'] as const;
 export type Tag = typeof tags[number];
 export interface Tagged {
   tags: readonly [Tag, ...Tag[]];
