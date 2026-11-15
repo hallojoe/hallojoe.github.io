@@ -16,6 +16,7 @@ export interface Tagged {
 export const repositories = [
   { name: 'cubing', tags: ['3D'] },
   { name: 'authentication-nemlogin3', tags: ['.NET'] },
+  { name: 'wafish', tags: ['.NET'] },
   { name: 'umbraco-topology', tags: ['Umbraco'] },
   { name: 'planetary', tags: ['3D'] },
   { name: 'solar-storm-simulator', tags: ['3D'] },
