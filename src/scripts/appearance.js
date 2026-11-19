@@ -9,7 +9,7 @@ const key = 'hallojoe.appearance.v1';
 let saved;
 try { saved = JSON.parse(localStorage.getItem(key)); } catch { /* Storage is optional. */ }
 const settings = {
-  theme: themes.some(b => b.value === saved?.theme) ? saved.theme : 'original',
+  theme: themes.some(b => b.value === saved?.theme) ? saved.theme : 'matrix',
   mode: ['light', 'dark'].includes(saved?.mode) ? saved.mode : 'system',
   mesh: saved?.mesh === 'wireframe' ? 'wireframe' : 'filled',
   effects: saved?.effects !== false,
