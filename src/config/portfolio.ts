@@ -19,6 +19,7 @@ export const repositories = [
   { name: 'wafish', tags: ['.NET'] },
   { name: 'umbraco-topology', tags: ['Umbraco'] },
   { name: 'planetary', tags: ['3D'] },
+  { name: 'periodic-table', tags: ['3D'] },
   { name: 'solar-storm-simulator', tags: ['3D'] },
   { name: 'hilbert-space', tags: ['3D'] },
   { name: 'terminal-theme-for-umbraco', tags: ['Umbraco'] },
