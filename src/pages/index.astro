@@ -47,11 +47,9 @@ const links = newestFirst(readingPage.links);
                   <span class="card-no">{String(index + 1).padStart(2, '0')} / REPO</span>
                   <span class="corner-arrow" aria-hidden="true">↗</span>
                 </div>
-                <div class="project-content">
-                  <div class="card-main">
-                    <h4>{project.name}</h4>
-                    <p>{project.description || 'A project hosted on GitHub.'}</p>
-                  </div>
+                <div class="card-main">
+                  <h4>{project.name}</h4>
+                  <p>{project.description || 'A project hosted on GitHub.'}</p>
                 </div>
                 <div class="card-bottom">
                   <div class="meta">
@@ -137,15 +135,15 @@ const links = newestFirst(readingPage.links);
   .section-caption { font-size: 14px; line-height: 1.6; color: var(--muted); max-width: 240px; text-align: right; }
   .tag-group + .tag-group { margin-top: 36px; }
   .tag-group > .eyebrow { margin: 0 0 14px; }
-  .project { background: var(--card); border: 1px solid var(--rule); border-radius: var(--radius); padding: 27px; min-height: 290px; display: flex; flex-direction: column; justify-content: space-between; transition: border-color .2s; }
+  .project { background: var(--card); border: 1px solid var(--rule); border-radius: var(--radius); padding: 27px; min-height: 290px; display: flex; flex-direction: column; transition: border-color .2s; }
   .project:hover { border-color: var(--highlight); }
   .card-top, .card-bottom { display: flex; justify-content: space-between; gap: 12px; }
   .card-top { align-items: center; }
   .card-no { font-size: 11px; letter-spacing: .12em; color: var(--muted); font-weight: 700; }
   .corner-arrow { color: var(--accent); font-size: 22px; }
+  .card-main { min-width: 0; padding-bottom: 29px; }
   .card-main h4 { font-size: 28px; letter-spacing: -.045em; font-weight: 660; margin: 16px 0 11px; overflow-wrap: anywhere; }
-  .card-main p { color: var(--muted); font-size: 14px; line-height: 1.6; max-width: 420px; margin: 0; }
-  .project-content { min-width: 0; margin-top: 12px; }
+  .card-main p { color: var(--muted); font-size: 14px; line-height: 1.6; margin: 0; }
   /* Keep the copy and actions on a surface matched to the current theme. */
   .screenshot-scrim {
     position: absolute; inset: 0; z-index: -1; pointer-events: none;
@@ -153,11 +151,11 @@ const links = newestFirst(readingPage.links);
       linear-gradient(to top, var(--card), transparent 60%),
       linear-gradient(105deg, var(--card) 2%, color-mix(in srgb, var(--card) 82%, transparent) 56%, transparent);
   }
-  .has-screenshot .card-main p { color: var(--soft-ink); max-width: min(34ch, 82%); }
+  .has-screenshot .card-main p { color: var(--soft-ink); }
   .has-screenshot .corner-arrow { color: var(--ink); }
   .has-screenshot .live::after { content: ''; position: absolute; inset: 0; }
   .has-screenshot:focus-within { outline: 2px solid var(--focus); outline-offset: 2px; }
-  .card-bottom { border-top: 1px solid var(--rule); padding-top: 19px; margin-top: 29px; flex-wrap: wrap; align-items: center; }
+  .card-bottom { border-top: 1px solid var(--rule); padding-top: 19px; margin-top: auto; flex-wrap: wrap; align-items: center; }
   .meta { display: flex; align-items: center; gap: 15px; color: var(--muted); font-size: 12px; }
   .language { display: flex; align-items: center; gap: 6px; }
   .language i { display: inline-block; width: 9px; height: 9px; border-radius: 100%; background: #8da5c6; }
