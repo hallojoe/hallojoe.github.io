@@ -3,6 +3,20 @@ layout: ../layouts/LinksPage.astro
 title: Links
 description: A reading list for the projects on this site, with dates and short comments.
 links:
+  - id: aspire-docs
+    date: "2026-11-22"
+    title: Aspire documentation
+    url: https://aspire.dev/docs/
+    tags: [".NET"]
+    comments:
+      - A starting point for building distributed applications with Aspire, from setup to deployment.
+  - id: aspire-17
+    date: "2026-11-22"
+    title: What's new in Aspire 17.0
+    url: https://aspire.dev/whats-new/aspire-17/
+    tags: [".NET"]
+    comments:
+      - The release notes to revisit when exploring Aspire 17 and upgrading existing projects.
   - id: dotnet-11-overview
     date: "2026-11-22"
     title: What's new in .NET 11
