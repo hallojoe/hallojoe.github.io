@@ -14,6 +14,7 @@ const themes = [
   ['kittens', 'Cute Japanese kittens', '#e69bb4'],
   ['times', 'Times', '#4055ba'],
 ];
+const menuThemes = themes.filter(([value]) => !['original', 'times'].includes(value));
 ---
 <div class="panel-controls">
   <button type="button" popovertarget="site-menu" aria-label="Menu" title="Menu">
@@ -27,11 +28,9 @@ const themes = [
 </div>
 
 <aside id="site-menu" class="panel" popover="auto" aria-labelledby="menu-title">
-  <div class="panel-heading">
-    <h2 id="menu-title">Menu</h2>
-    <button type="button" class="close" popovertarget="site-menu" popovertargetaction="hide" aria-label="Close menu">×</button>
-  </div>
-  <nav aria-label="Pages">
+  <button type="button" class="close menu-close" popovertarget="site-menu" popovertargetaction="hide" aria-label="Close menu">×</button>
+  <nav aria-labelledby="menu-title">
+    <h3 id="menu-title">Menu</h3>
     <a class="option" href="/" aria-current={Astro.url.pathname === '/' ? 'page' : undefined}>Home</a>
     <a class="option" href="/links/" aria-current={Astro.url.pathname.replace(/\/$/, '') === '/links' ? 'page' : undefined}>Links</a>
   </nav>
@@ -57,7 +56,7 @@ const themes = [
     </label>
     <fieldset class="themes">
       <legend>Theme</legend>
-      {themes.map(([value, label, color]) => (
+      {menuThemes.map(([value, label, color]) => (
         <label class="option">
           <span class="swatch" style={{ '--swatch': color }}></span>{label}
           <input type="radio" name="theme" value={value} checked={value === 'matrix'} />
@@ -66,8 +65,8 @@ const themes = [
     </fieldset>
   </fieldset>
   <fieldset id="scene-options">
-    <legend>3D mascot</legend>
-    <label class="option">Scene effects <input type="checkbox" id="effects" checked /></label>
+    <legend>Effects</legend>
+    <label class="option">Dimmer <input type="checkbox" id="effects" checked /></label>
     <label class="option">Wireframe <input type="checkbox" id="wireframe" /></label>
   </fieldset>
 </aside>
@@ -87,6 +86,9 @@ const themes = [
   button:hover, .option:hover { background: var(--shade); border-radius: var(--radius); }
   .panel-controls svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; }
   .close { font-size: 1.5rem; }
+  .menu-close { position: absolute; top: .25rem; right: .5rem; }
+  #site-menu > nav:first-of-type { margin-top: 0; }
+  #menu-title { padding-inline-end: 2rem; }
   .panel {
     position: fixed; top: max(.5rem, env(safe-area-inset-top)); right: calc(max(.5rem, env(safe-area-inset-right)) + 52px);
     bottom: auto; left: auto; margin: 0; width: min(22rem, calc(100% - 68px - env(safe-area-inset-right)));
