@@ -3,6 +3,20 @@ layout: ../layouts/LinksPage.astro
 title: Links
 description: A reading list for the projects on this site, with dates and short comments.
 links:
+  - id: dotnet-11-overview
+    date: "2026-11-22"
+    title: What's new in .NET 11
+    url: https://learn.microsoft.com/en-us/dotnet/core/whats-new/dotnet-11/overview
+    tags: [".NET"]
+    comments:
+      - An overview of the runtime, libraries, and SDK changes in .NET 11.
+  - id: csharp-15
+    date: "2026-11-22"
+    title: What's new in C# 15
+    url: https://learn.microsoft.com/en-us/dotnet/csharp/whats-new/csharp-15
+    tags: [".NET"]
+    comments:
+      - A guide to the new language features in C# 15, with examples to try in code.
   - id: threejs-docs
     date: "2026-11-12"
     title: Three.js documentation
