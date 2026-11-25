@@ -3,6 +3,27 @@ layout: ../layouts/LinksPage.astro
 title: Links
 description: A reading list for the projects on this site, with dates and short comments.
 links:
+  - id: microsoft-apm-docs
+    date: "2026-11-25"
+    title: Microsoft APM documentation
+    url: https://microsoft.github.io/apm/
+    tags: [".NET"]
+    comments:
+      - Official documentation for Agent Package Manager, a source for the getting started with Microsoft APM gist.
+  - id: microsoft-apm-repository
+    date: "2026-11-25"
+    title: Microsoft APM GitHub repository
+    url: https://github.com/microsoft/apm
+    tags: [".NET"]
+    comments:
+      - The source repository for Agent Package Manager, referenced in the getting started with Microsoft APM gist.
+  - id: microsoft-apm-quickstart
+    date: "2026-11-25"
+    title: Microsoft APM quickstart guide
+    url: https://microsoft.github.io/apm/getting-started/quick-start/
+    tags: [".NET"]
+    comments:
+      - The official quickstart referenced in the getting started with Microsoft APM gist.
   - id: aspire-docs
     date: "2026-11-22"
     title: Aspire documentation
