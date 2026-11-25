@@ -29,6 +29,7 @@ export const repositories = [
 ] satisfies (Tagged & { name: string })[];
 
 export const selectedGists = [
+  { id: '309e0f28c4d4a2119fa9c6fb12766454', title: 'Getting started with Microsoft APM', tags: ['.NET'] },
   { id: 'cd0bc288afdeb0de7d4feceda37c4a03', title: 'SQL Server on Apple Silicon', tags: ['.NET'] },
   { id: 'ba99d60c01d3c00f9c4cfcad4c874c50', title: 'Customizing Claude spinner verbs', tags: ['Humans'] },
   { id: '4cf68bdeaaffc986c4ceed3d15c984ea', title: 'XML Serialization Control in C#', tags: ['.NET'] },
